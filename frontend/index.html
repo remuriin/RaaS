@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Rem RaaS turns your markdown files into an API that answers questions, with the sources for every answer."
+    />
+    <meta name="theme-color" content="#020617" />
+    <title>Rem RaaS</title>
+    <!-- Sets the saved theme before the first paint, so the page never flashes the wrong one -->
+    <script>
+      try {
+        if (localStorage.getItem('raas-theme') === 'light') document.documentElement.dataset.theme = 'light'
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

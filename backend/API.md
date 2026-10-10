@@ -19,7 +19,8 @@ Authorization: Bearer <Firebase ID token>
 Get it from the Firebase SDK right before each request with `await user.getIdToken()`. The SDK refreshes it when it has expired, so never store the token yourself.
 
 - No token, or an invalid or expired one: `401`.
-- The first authenticated call from a new account creates its record on the server; there is no separate "register" call to the API.
+- The account's email has to be verified. A valid token from an account that hasn't opened its verification link gets `403` with `"code": "email_not_verified"`, and nothing is done or stored for it. A token keeps saying "not verified" until it is renewed, so after the person verifies, call `await user.getIdToken(true)` once. A Gmail address signed in through Google is verified from the start; every other sign-in, GitHub included, has to open the verification link first.
+- The first authenticated call from a new, verified account creates its record on the server; there is no separate "register" call to the API.
 
 ## Errors
 
@@ -29,13 +30,17 @@ Every error is JSON with one field, and a normal HTTP status:
 { "error": "You already have the maximum of 3 services" }
 ```
 
-The message is written for end users and can be shown as is.
+The message is written for end users and can be shown as is. One error also carries a `code` for the app to act on: the unverified-email `403` described above.
+
+```json
+{ "error": "Verify your email address first. Open the link in the email we sent you, then try again.", "code": "email_not_verified" }
+```
 
 | Status | Meaning |
 |---|---|
 | 400 | Something in the request is wrong (the message says what) |
 | 401 | Missing, invalid or expired login token |
-| 403 | The service belongs to another account |
+| 403 | The service belongs to another account, or the account's email isn't verified yet (`code: "email_not_verified"`) |
 | 404 | Unknown service, file or route |
 | 409 | Not allowed in the current state: service limit reached, service not active yet, file name already exists |
 | 413 | File larger than 500 KB |
@@ -235,7 +240,9 @@ The key gives full access to that service, so it belongs on the client's server,
 npx -y firebase-tools@latest apps:sdkconfig WEB 1:887318447626:web:fc9ba3396cb4e5d14b81f3 --project rag-service-remuriin
 ```
 
-Email/password sign-in is enabled. `localhost` is an authorized domain by default; `rag.remservers.me` has to be added in the Firebase console (Authentication → Settings → Authorized domains) before sign-in works on the deployed site.
+Email/password, Google and GitHub sign-in are enabled. The authorized domains (Firebase console, Authentication → Settings → Authorized domains) are the two Firebase ones, `rag.remservers.me` and `localhost`. `localhost` had to be added by hand: Firebase stopped adding it to new projects, and without it the Google and GitHub pop-ups are refused in local development (email/password works either way).
+
+GitHub sign-in goes through a GitHub OAuth app named "Rem RaaS", whose callback URL is `https://rag-service-remuriin.firebaseapp.com/__/auth/handler`. Its client ID and secret are stored in the Firebase console, nowhere in this repository.
 
 **Local development.** Let Vite forward `/api` to the real backend, so the browser sees one origin and no CORS setup is needed:
 

@@ -1,0 +1,382 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/ibm-plex-sans/wght.css';
+@import '@fontsource-variable/jetbrains-mono/wght.css';
+
+/* `dark:` follows the data-theme attribute on <html>, not the operating system */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Colour tokens. Names and values come from the Figma "Color" collection (Dark and Light modes).
+   Dark is the default; index.html switches data-theme to "light" when that was the saved choice. */
+:root {
+  color-scheme: dark;
+
+  --bg-canvas: #020617;
+  --bg-surface: #0e1223;
+  --bg-raised: #1a1e2f;
+  --bg-raised-hover: #232840;
+  --bg-inset: #060a16;
+
+  --border-default: #1e293b;
+  --border-strong: #334155;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #7c8ba1;
+  --text-on-accent: #ffffff;
+
+  --accent-default: #2563eb;
+  --accent-hover: #2e6cf0;
+  --accent-text: #60a5fa;
+  --accent-subtle: #0f1e3d;
+
+  --status-success: #22c55e;
+  --status-success-subtle: #052e1b;
+  --status-warning: #f59e0b;
+  --status-warning-subtle: #2a1b05;
+  --status-danger: #f87171;
+  --status-danger-subtle: #2d0f12;
+  --status-danger-solid: #dc2626;
+  --status-danger-solid-hover: #b91c1c;
+  --status-neutral: #94a3b8;
+  --status-neutral-subtle: #1a1e2f;
+
+  --scrim: rgb(2 6 23 / 0.72);
+  --pop-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(148 163 184 / 0.06);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  --bg-canvas: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-raised: #f1f5f9;
+  --bg-raised-hover: #e2e8f0;
+  --bg-inset: #f1f5f9;
+
+  --border-default: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #5f6f86; /* Figma has #64748b, which is 4.3:1 on the inset surface */
+  --text-on-accent: #ffffff;
+
+  --accent-default: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-text: #1d4ed8;
+  --accent-subtle: #dbeafe;
+
+  --status-success: #15803d;
+  --status-success-subtle: #dcfce7;
+  --status-warning: #b45309;
+  --status-warning-subtle: #fef3c7;
+  --status-danger: #b91c1c; /* Figma has #dc2626, which is 3.9:1 on its own subtle background */
+  --status-danger-subtle: #fee2e2;
+  --status-danger-solid: #dc2626;
+  --status-danger-solid-hover: #b91c1c;
+  --status-neutral: #64748b;
+  --status-neutral-subtle: #f1f5f9;
+
+  --scrim: rgb(15 23 42 / 0.45);
+  --pop-shadow: 0 24px 60px -12px rgb(15 23 42 / 0.25), 0 0 0 1px rgb(15 23 42 / 0.04);
+}
+
+@theme inline {
+  --font-sans: 'IBM Plex Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+  /* Only the project palette exists, so a stray bg-slate-800 is a build error, not a silent off-brand colour */
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-canvas: var(--bg-canvas);
+  --color-surface: var(--bg-surface);
+  --color-raised: var(--bg-raised);
+  --color-raised-hover: var(--bg-raised-hover);
+  --color-inset: var(--bg-inset);
+
+  --color-line: var(--border-default);
+  --color-line-strong: var(--border-strong);
+
+  --color-fg: var(--text-primary);
+  --color-fg-2: var(--text-secondary);
+  --color-fg-3: var(--text-muted);
+  --color-on-accent: var(--text-on-accent);
+
+  --color-accent: var(--accent-default);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-text);
+  --color-accent-subtle: var(--accent-subtle);
+
+  --color-success: var(--status-success);
+  --color-success-subtle: var(--status-success-subtle);
+  --color-warning: var(--status-warning);
+  --color-warning-subtle: var(--status-warning-subtle);
+  --color-danger: var(--status-danger);
+  --color-danger-subtle: var(--status-danger-subtle);
+  --color-danger-solid: var(--status-danger-solid);
+  --color-danger-solid-hover: var(--status-danger-solid-hover);
+  --color-neutral: var(--status-neutral);
+  --color-neutral-subtle: var(--status-neutral-subtle);
+
+  --color-scrim: var(--scrim);
+
+  /* The Figma text styles */
+  --text-display: 3rem;
+  --text-display--line-height: 3.5rem;
+  --text-display--letter-spacing: -0.021em;
+  --text-display--font-weight: 600;
+  --text-h1: 1.875rem;
+  --text-h1--line-height: 2.375rem;
+  --text-h1--letter-spacing: -0.017em;
+  --text-h1--font-weight: 600;
+  --text-h2: 1.375rem;
+  --text-h2--line-height: 1.875rem;
+  --text-h2--letter-spacing: -0.009em;
+  --text-h2--font-weight: 600;
+  --text-h3: 1rem;
+  --text-h3--line-height: 1.5rem;
+  --text-h3--font-weight: 600;
+  --text-body-lg: 1rem;
+  --text-body-lg--line-height: 1.625rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.375rem;
+  --text-small: 0.8125rem;
+  --text-small--line-height: 1.25rem;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1rem;
+  --text-caption--letter-spacing: 0.017em;
+  --text-caption--font-weight: 500;
+
+  --shadow-pop: var(--pop-shadow);
+
+  --animate-rise: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-pop: pop 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-toast: toast-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-slide: slide 1.4s ease-in-out infinite;
+  --animate-blink: blink 1.2s ease-in-out infinite both;
+}
+
+/* Corner rule, used everywhere: controls 8px (rounded-lg), cards 12px (rounded-xl),
+   dialogs 16px (rounded-2xl), badges and switches fully round. */
+
+@layer base {
+  html {
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    min-height: 100dvh;
+    font-size: 0.875rem;
+    line-height: 1.375rem;
+  }
+
+  /* The page behind an open dialog must not scroll */
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--accent-default) 35%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent-text);
+    outline-offset: 2px;
+  }
+
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:not(:disabled),
+  [role='switch']:not(:disabled),
+  label[for],
+  summary {
+    cursor: pointer;
+  }
+
+  code,
+  kbd,
+  pre {
+    font-family: var(--font-mono);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+@keyframes blink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* A loading placeholder in the shape of what is coming */
+.skeleton {
+  border-radius: 0.375rem;
+  background-image: linear-gradient(
+    90deg,
+    var(--bg-raised) 0%,
+    var(--bg-raised-hover) 40%,
+    var(--bg-raised) 80%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* Sections on the landing page ease in as they scroll into view.
+   Driven by the scroll position itself, so there is no scroll listener.
+   Browsers without scroll timelines simply show the content. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Markdown answers in the chat test */
+.prose-answer > :first-child {
+  margin-top: 0;
+}
+.prose-answer > :last-child {
+  margin-bottom: 0;
+}
+.prose-answer p,
+.prose-answer ul,
+.prose-answer ol,
+.prose-answer pre,
+.prose-answer blockquote {
+  margin-block: 0.5rem;
+}
+.prose-answer ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.prose-answer ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.prose-answer li {
+  margin-block: 0.125rem;
+}
+.prose-answer strong {
+  font-weight: 600;
+}
+.prose-answer a {
+  color: var(--accent-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-answer h1,
+.prose-answer h2,
+.prose-answer h3,
+.prose-answer h4 {
+  margin-block: 0.75rem 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.prose-answer code {
+  border-radius: 0.25rem;
+  background-color: var(--bg-inset);
+  padding: 0.0625rem 0.3125rem;
+  font-size: 0.8125rem;
+}
+.prose-answer pre {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  background-color: var(--bg-inset);
+  padding: 0.75rem;
+}
+.prose-answer pre code {
+  background: none;
+  padding: 0;
+}

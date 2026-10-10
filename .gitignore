@@ -1,0 +1,23 @@
+# My own documents, kept local
+/RaaS-web-app.md
+/IMPLEMENTATION-LOG.md
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Installed packages and build output
+node_modules/
+dist/
+
+# Logs (the Firebase CLI writes firebase-debug.log where it is run)
+*.log
+.firebase/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
