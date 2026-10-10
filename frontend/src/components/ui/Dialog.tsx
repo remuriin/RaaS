@@ -57,7 +57,7 @@ export function Dialog({ open, onClose, title, description, children, footer, bu
       onClick={(event) => {
         if (pressedBackdrop.current && event.target === event.currentTarget && !busy) onClose()
       }}
-      className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-md overflow-y-auto rounded-2xl border border-line-strong bg-surface p-0 text-fg shadow-pop backdrop:bg-scrim open:animate-pop"
+      className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-md overflow-y-auto glass rounded-2xl border border-line-strong p-0 text-fg shadow-pop backdrop:bg-scrim open:animate-pop"
     >
       {open && (
         <div className="p-6">

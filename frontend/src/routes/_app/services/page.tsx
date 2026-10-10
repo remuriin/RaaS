@@ -48,7 +48,7 @@ function ServicesPage() {
         {isPending && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" role="status" aria-label="Loading your services">
             {[0, 1, 2].map((index) => (
-              <div key={index} className="rounded-xl border border-line bg-surface p-5">
+              <div key={index} className="glass rounded-xl border border-line p-5">
                 <Skeleton className="h-5 w-2/5" />
                 <Skeleton className="mt-2 h-4 w-3/5" />
                 <Skeleton className="mt-5 h-9 w-full" />

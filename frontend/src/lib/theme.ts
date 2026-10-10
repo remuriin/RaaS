@@ -3,7 +3,7 @@ import { createStore, useStore } from './store'
 export type Theme = 'dark' | 'light'
 
 const STORAGE_KEY = 'raas-theme'
-const CANVAS: Record<Theme, string> = { dark: '#020617', light: '#f8fafc' }
+const CANVAS: Record<Theme, string> = { dark: '#0a0a0a', light: '#fafafa' }
 
 function currentTheme(): Theme {
   return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'

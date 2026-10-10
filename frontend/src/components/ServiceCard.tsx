@@ -16,7 +16,7 @@ export function ServiceCard({ service }: { service: Service }) {
     <Link
       to="/services/$id"
       params={{ id: service.id }}
-      className="group flex flex-col rounded-xl border border-line bg-surface p-5 transition-colors duration-150 hover:border-line-strong"
+      className="group glass flex flex-col rounded-xl border border-line p-5 transition-colors duration-150 hover:border-line-strong"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

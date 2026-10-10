@@ -1,33 +1,34 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/ibm-plex-sans/wght.css';
-@import '@fontsource-variable/jetbrains-mono/wght.css';
+@import '@fontsource-variable/geist/wght.css';
+@import '@fontsource-variable/geist-mono/wght.css';
 
 /* `dark:` follows the data-theme attribute on <html>, not the operating system */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
-/* Colour tokens. Names and values come from the Figma "Color" collection (Dark and Light modes).
+/* Colour tokens. The names come from the Figma "Color" collection (Dark and Light modes); the values
+   moved from navy to neutral charcoal and grey, with the blue accent kept.
    Dark is the default; index.html switches data-theme to "light" when that was the saved choice. */
 :root {
   color-scheme: dark;
 
-  --bg-canvas: #020617;
-  --bg-surface: #0e1223;
-  --bg-raised: #1a1e2f;
-  --bg-raised-hover: #232840;
-  --bg-inset: #060a16;
+  --bg-canvas: #0a0a0a;
+  --bg-surface: #141414;
+  --bg-raised: #1f1f1f;
+  --bg-raised-hover: #2a2a2a;
+  --bg-inset: #080808;
 
-  --border-default: #1e293b;
-  --border-strong: #334155;
+  --border-default: #262626;
+  --border-strong: #3f3f3f;
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #7c8ba1;
+  --text-primary: #fafafa;
+  --text-secondary: #a3a3a3;
+  --text-muted: #8a8a8a;
   --text-on-accent: #ffffff;
 
   --accent-default: #2563eb;
   --accent-hover: #2e6cf0;
   --accent-text: #60a5fa;
-  --accent-subtle: #0f1e3d;
+  --accent-subtle: #152238;
 
   --status-success: #22c55e;
   --status-success-subtle: #052e1b;
@@ -37,28 +38,38 @@
   --status-danger-subtle: #2d0f12;
   --status-danger-solid: #dc2626;
   --status-danger-solid-hover: #b91c1c;
-  --status-neutral: #94a3b8;
-  --status-neutral-subtle: #1a1e2f;
+  --status-neutral: #a3a3a3;
+  --status-neutral-subtle: #1f1f1f;
 
-  --scrim: rgb(2 6 23 / 0.72);
-  --pop-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(148 163 184 / 0.06);
+  --scrim: rgb(0 0 0 / 0.7);
+  --pop-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.04);
+
+  /* Glass panels: a see-through surface over the glow behind the page */
+  --glass-bg: color-mix(in srgb, var(--bg-surface) 72%, transparent);
+  --glass-highlight: rgb(255 255 255 / 0.06);
+  --glass-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px -24px rgb(0 0 0 / 0.8);
+  --glow:
+    radial-gradient(60rem 40rem at 12% -8%, rgb(37 99 235 / 0.24), transparent 60%),
+    radial-gradient(48rem 36rem at 92% 18%, rgb(37 99 235 / 0.13), transparent 60%),
+    radial-gradient(44rem 44rem at 50% 112%, rgb(96 165 250 / 0.1), transparent 60%);
+  --grid-line: rgb(255 255 255 / 0.055);
 }
 
 [data-theme='light'] {
   color-scheme: light;
 
-  --bg-canvas: #f8fafc;
+  --bg-canvas: #fafafa;
   --bg-surface: #ffffff;
-  --bg-raised: #f1f5f9;
-  --bg-raised-hover: #e2e8f0;
-  --bg-inset: #f1f5f9;
+  --bg-raised: #f4f4f5;
+  --bg-raised-hover: #e4e4e7;
+  --bg-inset: #f4f4f5;
 
-  --border-default: #e2e8f0;
-  --border-strong: #cbd5e1;
+  --border-default: #e4e4e7;
+  --border-strong: #d4d4d8;
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #5f6f86; /* Figma has #64748b, which is 4.3:1 on the inset surface */
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  --text-muted: #63636b; /* 5.5:1 on the inset surface */
   --text-on-accent: #ffffff;
 
   --accent-default: #2563eb;
@@ -74,16 +85,40 @@
   --status-danger-subtle: #fee2e2;
   --status-danger-solid: #dc2626;
   --status-danger-solid-hover: #b91c1c;
-  --status-neutral: #64748b;
-  --status-neutral-subtle: #f1f5f9;
+  --status-neutral: #71717a;
+  --status-neutral-subtle: #f4f4f5;
 
-  --scrim: rgb(15 23 42 / 0.45);
-  --pop-shadow: 0 24px 60px -12px rgb(15 23 42 / 0.25), 0 0 0 1px rgb(15 23 42 / 0.04);
+  --scrim: rgb(24 24 27 / 0.45);
+  --pop-shadow: 0 24px 60px -12px rgb(24 24 27 / 0.25), 0 0 0 1px rgb(24 24 27 / 0.04);
+
+  --glass-bg: color-mix(in srgb, var(--bg-surface) 70%, transparent);
+  --glass-highlight: rgb(255 255 255 / 0.9);
+  --glass-shadow: 0 1px 2px rgb(24 24 27 / 0.06), 0 16px 40px -24px rgb(24 24 27 / 0.25);
+  --glow:
+    radial-gradient(60rem 40rem at 12% -8%, rgb(37 99 235 / 0.16), transparent 60%),
+    radial-gradient(48rem 36rem at 92% 18%, rgb(37 99 235 / 0.1), transparent 60%),
+    radial-gradient(44rem 44rem at 50% 112%, rgb(96 165 250 / 0.12), transparent 60%);
+  --grid-line: rgb(24 24 27 / 0.06);
 }
 
+/* Frosted panel. Used with "border border-line"; the border stays a token so it matches everything else.
+   Anyone who asked their system for less transparency gets the plain surface instead. */
+@utility glass {
+  background-color: var(--glass-bg);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  @media (prefers-reduced-transparency: reduce) {
+    background-color: var(--bg-surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+
 @theme inline {
-  --font-sans: 'IBM Plex Sans Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'Cascadia Code', Consolas, monospace;
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'Cascadia Code', Consolas, monospace;
 
   /* Only the project palette exists, so a stray bg-slate-800 is a build error, not a silent off-brand colour */
   --color-*: initial;
@@ -159,6 +194,62 @@
   --animate-blink: blink 1.2s ease-in-out infinite both;
 }
 
+/* A box whose lower part dissolves into the page: its fill, border and contents all fade out together.
+   --fade is how far down the box is still fully solid; setting it to 100% (the code boxes do, under the
+   pointer) brings the whole box back. Registered as a percentage so that change can be animated. */
+@property --fade {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 40%;
+}
+@utility fade-out {
+  mask-image: linear-gradient(to bottom, black var(--fade), transparent calc(var(--fade) + 60%));
+  transition:
+    --fade 0.45s ease-out,
+    scale 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Syntax colours for a code box that wakes up under the pointer: plain at rest, coloured on hover.
+   A screen without a pointer shows the colours all the time. */
+.code-live [data-tok] {
+  transition: color 0.35s ease-out;
+}
+.code-live:is(:hover, :focus-within) {
+  --fade: 100%;
+  scale: 1.03;
+}
+@media (hover: none) {
+  .code-live {
+    --fade: 100%;
+  }
+}
+.code-live:is(:hover, :focus-within) [data-tok='key'] {
+  color: var(--accent-text);
+}
+.code-live:is(:hover, :focus-within) [data-tok='string'] {
+  color: var(--status-success);
+}
+.code-live:is(:hover, :focus-within) [data-tok='value'] {
+  color: var(--status-warning);
+}
+.code-live:is(:hover, :focus-within) [data-tok='flag'] {
+  color: var(--text-secondary);
+}
+@media (hover: none) {
+  .code-live [data-tok='key'] {
+    color: var(--accent-text);
+  }
+  .code-live [data-tok='string'] {
+    color: var(--status-success);
+  }
+  .code-live [data-tok='value'] {
+    color: var(--status-warning);
+  }
+  .code-live [data-tok='flag'] {
+    color: var(--text-secondary);
+  }
+}
+
 /* Corner rule, used everywhere: controls 8px (rounded-lg), cards 12px (rounded-xl),
    dialogs 16px (rounded-2xl), badges and switches fully round. */
 
@@ -178,6 +269,40 @@
     min-height: 100dvh;
     font-size: 0.875rem;
     line-height: 1.375rem;
+  }
+
+  /* The soft blue light behind every page; it is what the glass panels show through.
+     Fixed and still, so it costs nothing while scrolling. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--glow);
+  }
+
+  /* A grid of square boxes over that light, strongest at the top of the window and fading out to nothing
+     towards the sides and the bottom. Fixed and still, like the light. */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 4rem 4rem;
+    background-position: center top;
+    mask-image: radial-gradient(ellipse 75% 70% at 50% 0%, black 25%, transparent 100%);
+  }
+
+  /* Scroll bars everywhere (the page, the chat test, wide code): a thin rounded thumb in the border colour
+     on no track, so it reads as part of the surface it sits on. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
   }
 
   /* The page behind an open dialog must not scroll */

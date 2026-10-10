@@ -66,8 +66,9 @@ function ChatPage() {
 
   return (
     <Card className="flex flex-col">
+      {/* messages scrolling out of the box dissolve at its top and bottom edge; the padding keeps the first and last one clear of that */}
       <div
-        className="flex max-h-[60dvh] min-h-80 flex-col gap-5 overflow-y-auto p-5"
+        className="flex max-h-[60dvh] min-h-80 flex-col gap-5 overflow-y-auto p-5 [scrollbar-gutter:stable] [mask-image:linear-gradient(to_bottom,transparent,black_1rem,black_calc(100%-1rem),transparent)]"
         role="log"
         aria-label="Conversation"
         aria-live="polite"
@@ -244,7 +245,7 @@ function Sources({ sources }: { sources: AnswerSource[] }) {
 function Typing() {
   return (
     <div
-      className="flex h-10 items-center gap-1.5 self-start rounded-xl rounded-bl-sm border border-line-strong px-4"
+      className="flex h-10 shrink-0 items-center gap-1.5 self-start rounded-xl rounded-bl-sm border border-line-strong px-4"
       role="status"
       aria-label="Waiting for the answer"
     >

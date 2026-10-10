@@ -74,7 +74,7 @@ export function AccountMenu() {
       </button>
 
       {open && (
-        <div className="absolute top-full right-0 z-40 mt-2 w-64 animate-pop rounded-xl border border-line-strong bg-raised p-1.5 shadow-pop">
+        <div className="absolute top-full right-0 z-40 mt-2 w-64 glass animate-pop rounded-xl border border-line-strong p-1.5 shadow-pop">
           <div className="border-b border-line px-2.5 pt-1.5 pb-2.5">
             <p className="text-caption text-fg-3">Signed in as</p>
             <p className="truncate text-fg" title={email}>

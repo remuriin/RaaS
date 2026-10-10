@@ -7,16 +7,22 @@ import {
   TranslateIcon,
 } from '@phosphor-icons/react'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import ctaLayers from '../../assets/cta-layers.webp'
-import heroStack from '../../assets/hero-stack.webp'
-import indexDrawer from '../../assets/index-drawer.webp'
+import ctaSheetsLight from '../../assets/cta-sheets-light.webp'
+import ctaSheets from '../../assets/cta-sheets.webp'
+import heroSheetsLight from '../../assets/hero-sheets-light.webp'
+import heroSheets from '../../assets/hero-sheets.webp'
+import tileSheetsLight from '../../assets/tile-sheets-light.webp'
+import tileSheets from '../../assets/tile-sheets.webp'
+import { Picture } from '../../components/Picture'
 import { buttonClass } from '../../components/ui/buttonClass'
 import { CodeBlock } from '../../components/ui/CodeBlock'
 import { StatusBadge } from '../../components/ui/StatusBadge'
-import { useAuth } from '../../lib/auth'
+import { redirectIfSignedIn } from '../../lib/guards'
 import { usePageTitle } from '../../lib/usePageTitle'
 
 export const Route = createFileRoute('/_site/')({
+  // the landing page is for people who are not in yet; anyone signed in lands on their services
+  beforeLoad: () => redirectIfSignedIn(),
   component: LandingPage,
 })
 
@@ -40,9 +46,6 @@ const RESPONSE = `{
 
 function LandingPage() {
   usePageTitle()
-  const { user } = useAuth()
-  // one label for one intent, wherever the button sits on the page
-  const start = user ? { to: '/services' as const, label: 'Open dashboard' } : { to: '/register' as const, label: 'Get started' }
 
   return (
     <>
@@ -57,8 +60,8 @@ function LandingPage() {
             sources.
           </p>
           <div className="mt-9 flex animate-rise flex-col gap-3 [animation-delay:160ms] sm:flex-row">
-            <Link to={start.to} className={`${buttonClass({ size: 'lg' })} group`}>
-              {start.label}
+            <Link to="/register" className={`${buttonClass({ size: 'lg' })} group`}>
+              Get started
               <ArrowRightIcon className="size-4 transition-transform duration-150 group-hover:translate-x-0.5" weight="bold" aria-hidden />
             </Link>
             <Link to="/docs" className={buttonClass({ variant: 'secondary', size: 'lg' })}>
@@ -68,16 +71,17 @@ function LandingPage() {
         </div>
 
         <div className="relative animate-rise [animation-delay:240ms]">
-          <img
-            src={heroStack}
-            alt="A tall stack of paper sheets lit from behind in blue"
-            width={1200}
-            height={896}
+          <Picture
+            dark={heroSheets}
+            light={heroSheetsLight}
+            alt="Sheets of thin translucent paper falling onto a loose pile"
+            width={872}
+            height={1024}
             fetchPriority="high"
-            className="aspect-[4/3] w-full rounded-2xl border border-line object-cover"
+            className="mx-auto h-auto max-h-[30rem] w-auto"
           />
           {/* the same bubbles the dashboard's chat test draws */}
-          <div className="relative -mt-24 ml-auto flex w-[92%] flex-col gap-3 rounded-xl border border-line-strong bg-surface p-4 shadow-pop sm:-mt-28 sm:mr-6 sm:w-[78%] lg:absolute lg:right-auto lg:-bottom-10 lg:-left-10 lg:mt-0 lg:w-[70%]">
+          <div className="glass relative -mt-24 ml-auto flex w-[92%] flex-col gap-3 rounded-xl border border-line-strong p-4 shadow-pop sm:-mt-28 sm:mr-6 sm:w-[78%] lg:absolute lg:right-auto lg:-bottom-10 lg:-left-10 lg:mt-0 lg:w-[70%]">
             <p className="self-end rounded-xl rounded-br-sm bg-accent-subtle px-3.5 py-2 text-fg">
               How long do refunds take?
             </p>
@@ -129,7 +133,7 @@ function LandingPage() {
                 <p className="mt-2 max-w-lg text-body-lg text-fg-2">
                   Add markdown files. They are split and indexed, and usable as soon as the upload finishes.
                 </p>
-                <p className="mt-4 inline-flex max-w-full items-center gap-2.5 rounded-lg border border-line bg-surface px-3 py-2">
+                <p className="glass mt-4 inline-flex max-w-full items-center gap-2.5 rounded-lg border border-line px-3 py-2">
                   <FileTextIcon className="size-4.5 shrink-0 text-fg-3" aria-hidden />
                   <span className="truncate font-mono text-small text-fg">returns-and-refunds.md</span>
                   <span className="shrink-0 text-small text-fg-3">5 chunks</span>
@@ -143,7 +147,7 @@ function LandingPage() {
                 <p className="mt-2 max-w-lg text-body-lg text-fg-2">
                   Send a question with your API key and get back an answer, with the files it came from.
                 </p>
-                <p className="mt-4 inline-flex items-center gap-3 rounded-lg border border-line bg-surface px-3 py-2 font-mono text-small">
+                <p className="glass mt-4 inline-flex items-center gap-3 rounded-lg border border-line px-3 py-2 font-mono text-small">
                   <span className="font-medium text-accent-fg">POST</span>
                   <span className="text-fg">/query</span>
                 </p>
@@ -160,27 +164,27 @@ function LandingPage() {
             Built to be trusted with your content
           </h2>
           <div className="mt-12 grid grid-cols-1 gap-4 lg:grid-cols-6">
-            <article className="reveal group relative flex min-h-80 flex-col justify-end overflow-hidden rounded-xl border border-line lg:col-span-4 lg:row-span-2">
-              <img
-                src={indexDrawer}
-                alt="A drawer of paper index cards with one divider lit in blue"
-                width={1200}
-                height={896}
-                loading="lazy"
-                decoding="async"
-                className="absolute inset-0 size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-[#020617] via-[#020617]/70 to-transparent" />
-              <div className="relative p-6 sm:p-8">
-                <h3 className="text-h2 text-white">Grounded answers</h3>
-                <p className="mt-2 max-w-md text-body-lg text-white/75">
+            <article className="reveal glass fade-out relative min-h-96 overflow-hidden rounded-xl border border-line [--fade:55%] lg:col-span-4 lg:row-span-2">
+              <div className="relative z-10 max-w-md p-6 sm:p-8">
+                <h3 className="text-h2">Grounded answers</h3>
+                <p className="mt-2 text-body-lg text-fg-2">
                   The assistant answers only from your files, and says so plainly when they don&rsquo;t cover a
                   question.
                 </p>
               </div>
+              <Picture
+                dark={tileSheets}
+                light={tileSheetsLight}
+                alt="An open steel file drawer packed with sheets of thin paper"
+                width={1149}
+                height={725}
+                loading="lazy"
+                decoding="async"
+                className="absolute -right-6 -bottom-16 h-auto w-[88%] max-w-2xl sm:w-[72%]"
+              />
             </article>
 
-            <article className="reveal rounded-xl border border-line bg-surface p-6 lg:col-span-2">
+            <article className="reveal glass rounded-xl border border-line p-6 lg:col-span-2">
               <h3 className="text-h3">Sources included</h3>
               <p className="mt-2 text-fg-2">Every answer lists the file and the section it came from.</p>
               <div className="mt-5 flex flex-col items-start gap-1.5">
@@ -205,7 +209,7 @@ function LandingPage() {
               </p>
             </article>
 
-            <article className="reveal rounded-xl border border-line bg-surface p-6 lg:col-span-3">
+            <article className="reveal glass rounded-xl border border-line p-6 lg:col-span-3">
               <TranslateIcon className="size-6 text-accent-fg" aria-hidden />
               <h3 className="mt-4 text-h3">Answers that fit your app</h3>
               <p className="mt-2 max-w-md text-fg-2">
@@ -214,7 +218,7 @@ function LandingPage() {
               </p>
             </article>
 
-            <article className="reveal rounded-xl border border-line bg-surface p-6 lg:col-span-3">
+            <article className="reveal glass rounded-xl border border-line p-6 lg:col-span-3">
               <ChartBarIcon className="size-6 text-accent-fg" aria-hidden />
               <h3 className="mt-4 text-h3">Usage at a glance</h3>
               <p className="mt-2 max-w-md text-fg-2">
@@ -233,8 +237,8 @@ function LandingPage() {
             No SDK to install. Anything that can send an HTTP request can ask your service a question.
           </p>
           <div className="reveal mt-10 grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
-            <CodeBlock label="Request" code={REQUEST} />
-            <CodeBlock label="Response" code={RESPONSE} copyable={false} />
+            <CodeBlock label="Request" code={REQUEST} live />
+            <CodeBlock label="Response" code={RESPONSE} copyable={false} live />
           </div>
         </div>
       </section>
@@ -254,23 +258,23 @@ function LandingPage() {
 
       {/* The closing call to action, over the last picture */}
       <section className={`${wrap} pb-20 lg:pb-28`}>
-        <div className="reveal relative overflow-hidden rounded-2xl border border-line bg-[#020617]">
-          <img
-            src={ctaLayers}
+        <div className="reveal glass relative overflow-hidden rounded-2xl border border-line">
+          <Picture
+            dark={ctaSheets}
+            light={ctaSheetsLight}
             alt=""
-            width={1584}
-            height={672}
+            width={1258}
+            height={631}
             loading="lazy"
             decoding="async"
-            className="absolute inset-0 size-full object-cover"
+            className="absolute top-1/2 right-6 hidden h-auto w-[44%] max-w-xl -translate-y-1/2 sm:block"
           />
-          <div className="absolute inset-0 bg-linear-to-r from-[#020617] via-[#020617]/80 to-transparent" />
-          <div className="relative flex flex-col items-start gap-8 px-6 py-14 sm:px-12 sm:py-20">
-            <h2 className="max-w-lg text-3xl leading-tight font-semibold tracking-tight text-white sm:text-4xl">
+          <div className="relative flex flex-col items-start gap-8 px-6 py-14 sm:max-w-[55%] sm:px-12 sm:py-20">
+            <h2 className="max-w-lg text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">
               Give your app an assistant that knows your docs
             </h2>
-            <Link to={start.to} className={`${buttonClass({ size: 'lg' })} group`}>
-              {start.label}
+            <Link to="/register" className={`${buttonClass({ size: 'lg' })} group`}>
+              Get started
               <ArrowRightIcon className="size-4 transition-transform duration-150 group-hover:translate-x-0.5" weight="bold" aria-hidden />
             </Link>
           </div>

@@ -13,7 +13,7 @@ export function Toaster() {
         <div
           key={toast.id}
           role={toast.tone === 'danger' ? 'alert' : 'status'}
-          className="pointer-events-auto flex w-full max-w-sm animate-toast items-start gap-3 rounded-xl border border-line-strong bg-raised px-4 py-3 shadow-pop"
+          className="pointer-events-auto flex w-full max-w-sm animate-toast items-start gap-3 glass rounded-xl border border-line-strong px-4 py-3 shadow-pop"
         >
           {toast.tone === 'success' ? (
             <CheckCircleIcon className="mt-0.5 size-4.5 shrink-0 text-success" weight="fill" aria-hidden />

@@ -1,10 +1,12 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import { ApiReference } from '../../../components/ApiReference'
 import { Alert } from '../../../components/ui/Alert'
 import { buttonClass } from '../../../components/ui/buttonClass'
 import { Card } from '../../../components/ui/Card'
 import { CodeBlock } from '../../../components/ui/CodeBlock'
 import { useAuth } from '../../../lib/auth'
+import { cx } from '../../../lib/cx'
 import { usePageTitle } from '../../../lib/usePageTitle'
 
 export const Route = createFileRoute('/_site/docs/')({
@@ -15,11 +17,31 @@ export const Route = createFileRoute('/_site/docs/')({
 const EXAMPLE_URL = 'https://rag.remservers.me/i/<your-service-id>'
 
 const SECTIONS = [
+  { id: 'how-it-works', label: 'How it works' },
   { id: 'quick-start', label: 'Quick start' },
   { id: 'authentication', label: 'Authentication' },
   { id: 'ask', label: 'Ask a question' },
   { id: 'files', label: 'Manage files' },
   { id: 'errors', label: 'Errors and limits' },
+]
+
+const HOW = [
+  {
+    title: 'Your files are split into pieces',
+    text: 'Each markdown file is cut at its headings into short sections, so a question can be matched to the exact part of a file that covers it.',
+  },
+  {
+    title: 'Every piece gets a meaning, not just words',
+    text: 'Each section is turned into an embedding: a numeric description of what it says. A question is matched by meaning, so "money back" still finds the section about refunds.',
+  },
+  {
+    title: 'The answer comes only from the matched pieces',
+    text: 'The best-matching sections are handed to the model with the question, and it is told to answer from those alone. Nothing from the open internet, nothing made up.',
+  },
+  {
+    title: 'When nothing matches, it says so',
+    text: 'If your files don\'t cover a question, the reply says that plainly and the response carries "answered": false, so your app can handle it.',
+  },
 ]
 
 const STEPS = [
@@ -45,17 +67,41 @@ function DocsPage() {
   usePageTitle('Docs')
   const { user } = useAuth()
 
+  // The section being read: the last one whose top has passed under the bar. At the very bottom it is
+  // the last section, which is too short to ever reach the top of the window.
+  const [current, setCurrent] = useState(SECTIONS[0].id)
+  useEffect(() => {
+    const update = () => {
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2
+      const passed = SECTIONS.filter((section) => (document.getElementById(section.id)?.getBoundingClientRect().top ?? Infinity) <= 140)
+      setCurrent((atBottom ? SECTIONS[SECTIONS.length - 1] : (passed[passed.length - 1] ?? SECTIONS[0])).id)
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [])
+
   return (
     <div className="mx-auto grid w-full max-w-[1184px] grid-cols-1 gap-10 px-4 pt-10 pb-20 sm:px-6 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-16 lg:px-8 lg:pt-16">
       <nav aria-label="On this page" className="hidden lg:block">
-        <div className="sticky top-28">
+        {/* the bar (4rem + its 1px line) plus the page's 4rem of top padding: exactly where the list already
+            sits, so it stays still from the first pixel of scrolling */}
+        <div className="sticky top-[calc(8rem+1px)]">
           <p className="text-caption text-fg-3">On this page</p>
           <ul className="mt-3 flex flex-col gap-1 border-l border-line">
             {SECTIONS.map((section) => (
               <li key={section.id}>
                 <a
                   href={`#${section.id}`}
-                  className="-ml-px block border-l border-transparent py-1 pl-4 text-fg-2 transition-colors hover:border-fg-3 hover:text-fg"
+                  aria-current={current === section.id ? 'location' : undefined}
+                  className={cx(
+                    '-ml-px block border-l py-1 pl-4 transition-colors',
+                    current === section.id ? 'border-accent-fg font-medium text-fg' : 'border-transparent text-fg-2 hover:border-fg-3 hover:text-fg',
+                  )}
                 >
                   {section.label}
                 </a>
@@ -73,6 +119,21 @@ function DocsPage() {
             address and its API key.
           </p>
         </header>
+
+        <Card className="scroll-mt-24 p-6" id="how-it-works">
+          <h2 className="text-h3">How it works</h2>
+          <ol className="mt-5 grid gap-x-10 gap-y-6 sm:grid-cols-2">
+            {HOW.map((step, index) => (
+              <li key={step.title} className="flex gap-4">
+                <span className="font-mono text-h3 text-accent-fg">{index + 1}</span>
+                <div>
+                  <h3 className="font-medium text-fg">{step.title}</h3>
+                  <p className="mt-1 text-fg-2">{step.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Card>
 
         <Card className="scroll-mt-24 p-6" id="quick-start">
           <h2 className="text-h3">Quick start</h2>
