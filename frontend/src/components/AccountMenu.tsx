@@ -17,6 +17,8 @@ export function AccountMenu() {
   const theme = useTheme()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
+  // the address of a picture that failed to load, so the initial is shown in its place
+  const [brokenPhoto, setBrokenPhoto] = useState<string | null>(null)
   const root = useRef<HTMLDivElement>(null)
   const trigger = useRef<HTMLButtonElement>(null)
 
@@ -47,6 +49,7 @@ export function AccountMenu() {
 
   const email = user?.email ?? 'Account'
   const initial = email.charAt(0).toUpperCase()
+  const photo = user?.photoURL && user.photoURL !== brokenPhoto ? user.photoURL : null
   const ThemeIcon = theme === 'dark' ? SunIcon : MoonIcon
 
   return (
@@ -67,9 +70,22 @@ export function AccountMenu() {
         className="flex h-10 items-center gap-2.5 rounded-lg pr-1 pl-2 text-fg-2 transition-colors hover:bg-raised hover:text-fg pointer-coarse:h-11 md:pl-3"
       >
         <span className="hidden max-w-56 truncate text-small md:block">{email}</span>
-        <span className="hidden size-8 place-items-center rounded-full border border-line-strong bg-raised text-caption text-fg md:grid">
-          {initial}
-        </span>
+        {photo ? (
+          // Google and GitHub accounts come with a picture. no-referrer: Google refuses the picture to some referring sites
+          <img
+            src={photo}
+            alt=""
+            width={32}
+            height={32}
+            referrerPolicy="no-referrer"
+            onError={() => setBrokenPhoto(photo)}
+            className="hidden size-8 rounded-full border border-line-strong object-cover md:block"
+          />
+        ) : (
+          <span className="hidden size-8 place-items-center rounded-full border border-line-strong bg-raised text-caption text-fg md:grid">
+            {initial}
+          </span>
+        )}
         <ListIcon className="size-5 md:hidden" aria-hidden />
       </button>
 
