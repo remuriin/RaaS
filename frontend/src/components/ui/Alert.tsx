@@ -14,6 +14,8 @@ const tones: Record<Tone, { box: string; icon: string; Icon: typeof InfoIcon }> 
 interface AlertProps {
   tone: Tone
   title: string
+  /** Announce it when it appears. On by default for danger and warning; turn off for text that is simply part of the page. */
+  live?: boolean
   children?: ReactNode
   /** Buttons or links at the end of the message */
   action?: ReactNode
@@ -21,11 +23,12 @@ interface AlertProps {
 }
 
 /** A message that sits in the page: something went wrong, needs care, or went well. */
-export function Alert({ tone, title, children, action, className }: AlertProps) {
+export function Alert({ tone, title, children, action, className, live }: AlertProps) {
   const { box, icon, Icon } = tones[tone]
+  const announce = live ?? (tone === 'danger' || tone === 'warning')
   return (
     <div
-      role={tone === 'danger' || tone === 'warning' ? 'alert' : 'status'}
+      role={announce ? 'alert' : 'status'}
       className={cx('flex gap-3 rounded-lg border px-4 py-3', box, className)}
     >
       <Icon className={cx('mt-0.5 size-4.5 shrink-0', icon)} aria-hidden />

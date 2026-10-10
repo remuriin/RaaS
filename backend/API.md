@@ -38,12 +38,13 @@ The message is written for end users and can be shown as is. One error also carr
 
 | Status | Meaning |
 |---|---|
-| 400 | Something in the request is wrong (the message says what) |
+| 400 | Something in the request is wrong (the message says what). For an upload this includes a file that would be split into more than 1,000 pieces |
 | 401 | Missing, invalid or expired login token |
 | 403 | The service belongs to another account, or the account's email isn't verified yet (`code: "email_not_verified"`) |
 | 404 | Unknown service, file or route |
 | 409 | Not allowed in the current state: service limit reached, service not active yet, file name already exists |
 | 413 | File larger than 500 KB |
+| 429 | Too many requests: more than 5 per second from one IP address, or more than 5 uploads waiting their turn on one service. Wait a few seconds |
 | 415 | Upload not sent as markdown or plain text |
 | 502 | The service's process is not responding |
 | 503 | The model is busy or rate limited; retry shortly |
@@ -168,7 +169,7 @@ await fetch(`/api/instances/${id}/documents/${encodeURIComponent(file.name)}`, {
 - The request only returns once the file is fully processed, which can take from a second to a minute or more. Show a progress state and don't time out early.
 - `:name` must end in `.md` and use only letters, numbers, dots, dashes and underscores (max 100 characters): `400` otherwise.
 - `409` if a file with that name already exists. There is no overwrite: delete, then upload again.
-- `400` empty or non-text file, `413` over 500 KB, `415` wrong content type.
+- `400` empty or non-text file, or one that would be split into more than 1,000 pieces (very many tiny headings); `413` over 500 KB; `415` wrong content type; `429` when 5 uploads are already waiting on that service.
 - On `500`/`503` the upload is kept as a `failed` entry in the list; uploading the same name again replaces that failed entry.
 
 **`DELETE /api/instances/:id/documents/:name`** → `204` with an empty body (`404` if there is no such file)
@@ -181,7 +182,7 @@ await fetch(`/api/instances/${id}/documents/${encodeURIComponent(file.name)}`, {
 { "question": "What do staff wear?", "markdown": false }
 ```
 
-- `question` is required, at most 2000 characters. `markdown` is optional (default `false`): send `true` if the page renders markdown, otherwise answers are plain text with line breaks.
+- `question` is required, at most 2000 characters. `markdown` is optional (default `false`): send `true` if the page renders markdown, otherwise answers are plain text with line breaks. `topK` is optional (1 to 20, default 5): how many passages from the files the answer may draw on.
 - There is no conversation memory; each question stands alone.
 - A reply can take a few seconds, longer when the model is rate limited.
 - These questions count in the service's `queries` numbers.
@@ -209,7 +210,7 @@ await fetch(`/api/instances/${id}/documents/${encodeURIComponent(file.name)}`, {
 | `failed` | no (409) | no (409) | yes | yes |
 | `deleting` | no (409) | no (409) | no point | already happening |
 
-**Limits.** 3 services per account, 500 KB per file, 5 requests per second per IP address.
+**Limits.** 3 services per account, 500 KB per file, 1,000 pieces per file, 5 requests per second per IP address (over that: `429` with a JSON body), 5 uploads waiting per service.
 
 ## The client's own app (for the API guide page)
 
@@ -257,13 +258,4 @@ export default defineConfig({
 });
 ```
 
-**Deployment.** Build the app (`npm run build`), copy the output folder to the VPS (for example `/var/www/rag-app`), and replace the `location / { return 404; }` block in `/etc/nginx/sites-available/rag.conf` with:
-
-```nginx
-    location / {
-        root /var/www/rag-app;
-        try_files $uri /index.html;   # let the app's own router handle page URLs
-    }
-```
-
-Then `sudo nginx -t && sudo systemctl reload nginx`. The `/api/` and `/i/<id>/` routes are more specific and keep working unchanged.
+**Deployment.** The full procedure (building, copying `dist/` to the VPS, the nginx snippet with its caching rules, security headers and the Content-Security-Policy that allows Firebase's sign-in pop-up) is in the backend repository: `RAG-API/deploy/README.md`, section "The web app". The app is served from `/var/www/rag-app`; a redeploy is a file copy and needs no nginx reload.

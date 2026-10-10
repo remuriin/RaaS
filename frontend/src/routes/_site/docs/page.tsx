@@ -107,7 +107,7 @@ function DocsPage() {
             Each service has exactly one key. Generating a new one makes the old one stop working at once.
           </p>
           <CodeBlock className="mt-5 max-w-2xl" label="Header" code="Authorization: Bearer rag_your_api_key" copyable={false} />
-          <Alert tone="warning" title="Keep the key on your server" className="mt-5 max-w-2xl">
+          <Alert tone="warning" title="Keep the key on your server" live={false} className="mt-5 max-w-2xl">
             It gives full access to the service, including its files. Don&rsquo;t put it in browser or mobile app
             code.
           </Alert>

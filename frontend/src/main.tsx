@@ -3,6 +3,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import { ErrorPage } from './components/ErrorPage'
 import { Splash } from './components/Splash'
 import { onAuthChange } from './lib/auth'
 import { queryClient } from './lib/queries'
@@ -16,6 +17,8 @@ const router = createRouter({
   // what to show when a page takes a moment to be ready (its login check is still running)
   defaultPendingComponent: Splash,
   defaultPendingMs: 400,
+  // what to show when a page throws while drawing
+  defaultErrorComponent: ErrorPage,
   scrollRestoration: true,
 })
 
@@ -38,6 +41,13 @@ onAuthChange(({ user }) => {
   }
   knownUid = uid
   void router.invalidate()
+})
+
+// After a new build is put on the server, a tab that is still open may ask for a page file that no longer
+// exists (the file names carry a hash of their content). Loading the page fresh picks up the new build.
+window.addEventListener('vite:preloadError', (event) => {
+  event.preventDefault()
+  window.location.reload()
 })
 
 createRoot(document.getElementById('root')!).render(

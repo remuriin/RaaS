@@ -91,13 +91,12 @@ export function ApiReference({ url }: { url: string }) {
           Send the question as JSON. Each question stands alone: there is no conversation memory between requests.
         </p>
 
-        <div className="mt-5 inline-flex rounded-lg border border-line bg-inset p-1" role="tablist" aria-label="Language">
+        <div className="mt-5 inline-flex rounded-lg border border-line bg-inset p-1" role="group" aria-label="Example language">
           {LANGUAGES.map((item) => (
             <button
               key={item}
               type="button"
-              role="tab"
-              aria-selected={language === item}
+              aria-pressed={language === item}
               onClick={() => setLanguage(item)}
               className={cx(
                 'h-8 rounded-md px-3 text-small font-medium transition-colors pointer-coarse:h-10',

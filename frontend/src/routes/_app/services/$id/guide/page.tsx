@@ -36,7 +36,7 @@ function GuidePage() {
             before calling it from your app.
           </Alert>
         )}
-        <Alert tone="warning" title="Keep the key on your server" className="mt-5 max-w-2xl">
+        <Alert tone="warning" title="Keep the key on your server" live={false} className="mt-5 max-w-2xl">
           It gives full access to this service, including its files. Don&rsquo;t put it in browser or mobile app code.
         </Alert>
       </Card>

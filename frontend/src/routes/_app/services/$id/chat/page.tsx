@@ -55,7 +55,8 @@ function ChatPage() {
 
   // Enter sends, Shift+Enter starts a new line
   function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+    // keyCode 229 is Safari's way of saying the Enter belonged to an input method (Japanese, Chinese...)
+    if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) {
       event.preventDefault()
       send(question)
     }
@@ -184,7 +185,10 @@ function Message({ message, onRetry, busy }: { message: ChatMessage; onRetry: (q
         {message.markdown ? (
           <Suspense fallback={<p className="whitespace-pre-wrap">{message.text}</p>}>
             <div className="prose-answer">
-              <Markdown>{message.text}</Markdown>
+              {/* no images: an answer could otherwise make the browser fetch a picture from anywhere */}
+              <Markdown disallowedElements={['img']} unwrapDisallowed>
+                {message.text}
+              </Markdown>
             </div>
           </Suspense>
         ) : (

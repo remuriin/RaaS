@@ -2,13 +2,15 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'sh
 const numberFormat = new Intl.NumberFormat('en-US')
 const relativeFormat = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
 
-/** "9 Oct 2026" */
+/** "9 Oct 2026"; a date the server got wrong shows as a dash instead of breaking the page */
 export function formatDate(iso: string): string {
-  return dateFormat.format(new Date(iso))
+  const date = new Date(iso)
+  return Number.isNaN(date.getTime()) ? '–' : dateFormat.format(date)
 }
 
 /** "2 minutes ago" for the last day, the plain date after that. */
 export function formatWhen(iso: string): string {
+  if (Number.isNaN(new Date(iso).getTime())) return '–'
   const seconds = Math.round((new Date(iso).getTime() - Date.now()) / 1000)
   const age = Math.abs(seconds)
   if (age < 45) return 'just now'

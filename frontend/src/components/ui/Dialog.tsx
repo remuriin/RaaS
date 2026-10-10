@@ -26,7 +26,12 @@ export function Dialog({ open, onClose, title, description, children, footer, bu
   useEffect(() => {
     const dialog = ref.current
     if (!dialog) return
-    if (open && !dialog.open) dialog.showModal()
+    if (open && !dialog.open) {
+      dialog.showModal()
+      // React's autoFocus ran while the dialog was still hidden, so it did nothing; focus the field now
+      const first = dialog.querySelector<HTMLElement>('[autofocus], input, textarea, select')
+      first?.focus()
+    }
     if (!open && dialog.open) dialog.close()
   }, [open])
 
@@ -36,8 +41,13 @@ export function Dialog({ open, onClose, title, description, children, footer, bu
       aria-labelledby={titleId}
       aria-describedby={description ? descriptionId : undefined}
       onCancel={(event) => {
-        event.preventDefault()
-        if (!busy) onClose()
+        // Escape while a request is running: the browser only lets this be refused once per key press,
+        // so a second Escape closes the dialog anyway. onClose below then keeps React in step.
+        if (busy) event.preventDefault()
+      }}
+      // whatever closed the dialog (Escape, the browser's own gesture), React follows the DOM
+      onClose={() => {
+        if (open) onClose()
       }}
       // A click counts as "outside" only when it both started and ended on the backdrop,
       // so dragging a text selection out of an input does not close the dialog

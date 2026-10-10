@@ -26,13 +26,14 @@ function VerifyEmailPage() {
     null,
   )
 
-  // The link is usually opened in another tab, so this page keeps asking Firebase whether it happened.
+  // The link is usually opened in another tab, so this page keeps asking Firebase whether it happened
+  // (every 15 seconds, and whenever the tab comes back into view).
   // The moment it has, the route's own login check runs again and moves on to the dashboard.
   useEffect(() => {
     const check = () => {
       if (document.visibilityState === 'visible') void refreshUser().catch(() => undefined)
     }
-    const interval = window.setInterval(check, 5000)
+    const interval = window.setInterval(check, 15000)
     document.addEventListener('visibilitychange', check)
     return () => {
       window.clearInterval(interval)

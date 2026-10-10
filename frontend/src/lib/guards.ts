@@ -5,15 +5,23 @@ import { takeSignedOut } from './session'
 // These run in a route's beforeLoad, before any of the page is drawn. They read Firebase directly
 // (not React state), so they always see the login as it is at that exact moment.
 
+// the sign-in pages themselves are never worth going back to
+const AUTH_PAGES = ['/sign-in', '/register', '/forgot-password', '/verify-email']
+
 /** Only a path inside this app is accepted as a place to go back to after signing in. */
 export function safeRedirect(value: unknown): string | undefined {
   if (typeof value !== 'string') return undefined
   if (!value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\')) return undefined
+  let pathname: string
   try {
-    return new URL(value, window.location.origin).pathname
+    pathname = new URL(value, window.location.origin).pathname
   } catch {
     return undefined
   }
+  // "/..//evil.com" survives the checks above but comes out of the URL parser as "//evil.com"
+  if (!pathname.startsWith('/') || pathname.startsWith('//') || pathname.includes('\\')) return undefined
+  if (AUTH_PAGES.some((page) => pathname === page || pathname.startsWith(`${page}/`))) return undefined
+  return pathname
 }
 
 async function currentUser() {

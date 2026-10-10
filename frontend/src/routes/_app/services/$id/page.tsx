@@ -148,7 +148,7 @@ function ApiKeyCard({ service }: { service: Service }) {
 
       {newKey ? (
         <>
-          <Alert tone="warning" title="Copy this key now" className="mt-4">
+          <Alert tone="warning" title="Copy this key now" live={false} className="mt-4">
             It is not stored and cannot be shown again. If you lose it, generate a new one.
           </Alert>
           <p className="mt-5 mb-1.5 text-caption text-fg-2">Your new API key</p>

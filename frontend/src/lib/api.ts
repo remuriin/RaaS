@@ -22,7 +22,7 @@ const FALLBACK: Record<number, string> = {
   404: "That doesn't exist any more.",
   413: 'That file is larger than 500 KB.',
   429: 'Too many requests. Wait a few seconds and try again.',
-  502: "This service isn't responding right now. Try again in a moment.",
+  502: "The server isn't responding right now. Try again in a moment.",
   503: 'The model is busy. Wait a few seconds and try again.',
 }
 

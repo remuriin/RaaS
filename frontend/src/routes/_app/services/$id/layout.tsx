@@ -135,12 +135,9 @@ function ServiceLayout() {
                 {tab.label}
               </Link>
             ) : (
-              <span
-                key={tab.to}
-                aria-disabled
-                className="-mb-px border-b-2 border-transparent py-3 font-medium text-fg-3 opacity-50"
-              >
+              <span key={tab.to} className="-mb-px border-b-2 border-transparent py-3 font-medium text-fg-3 opacity-50">
                 {tab.label}
+                <span className="sr-only">, not available while the service is {service.status}</span>
               </span>
             ),
           )}
