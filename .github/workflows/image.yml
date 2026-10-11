@@ -1,4 +1,4 @@
-# Builds the web app's container image and puts it in GitHub's registry, where the cluster downloads it from.
+# On a push to main: check the web app, build its container image, and make the cluster run it.
 # The VPS never builds anything.
 name: image
 
@@ -16,11 +16,28 @@ permissions:
   contents: read
   packages: write
 
-# two pushes in a row build one after the other, never at once
+# two pushes in a row run one after the other, never at once
 concurrency: image
 
 jobs:
+  # the linter. The type check is part of the build itself ("tsc -b"), so a type error stops the next job.
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+
   build:
+    needs: check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,3 +69,23 @@ jobs:
             VITE_FIREBASE_APP_ID=${{ vars.VITE_FIREBASE_APP_ID }}
           labels: |
             org.opencontainers.image.source=https://github.com/remuriin/RaaS
+
+  # Logs in to the VPS as the "deploy" user. This repository's key can do one thing there: ask for a
+  # deployment in the rem-raas namespace to run the image of a commit (RAG-API/deploy/k8s-deploy).
+  # That script waits for the new pod, and goes back to the old image by itself if it is not healthy,
+  # which makes this job fail.
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: make the cluster run this commit
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          [ -n "$DEPLOY_KEY" ] || { echo "the DEPLOY_KEY secret is not set"; exit 1; }
+          mkdir -p ~/.ssh
+          # the VPS's public host key, so the key is only ever offered to the real VPS
+          echo "140.245.60.8 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBanLnPlG+CZMZyISZMZcqZRg3x0MIBK7sYoCjenpObq" > ~/.ssh/known_hosts
+          install -m 600 /dev/null ~/.ssh/deploy
+          echo "$DEPLOY_KEY" > ~/.ssh/deploy
+          ssh -i ~/.ssh/deploy deploy@140.245.60.8 "web $GITHUB_SHA"
