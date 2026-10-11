@@ -1,0 +1,20 @@
+# A fixed address for the web app's pod. Pods are replaced and change address; this never does.
+#
+# The address is chosen by hand so the VPS's nginx can be pointed at it once and for all.
+# It exists only inside the VPS: nothing outside can reach a 10.43 address, so the only way in
+# is through nginx. (A "NodePort" was not used: it would open a port on the VPS that skips ufw.)
+#
+# One address per project, counting up from here: 10.43.0.80 rem-raas web, 10.43.0.81 next, ...
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: rem-raas
+spec:
+  type: ClusterIP
+  clusterIP: 10.43.0.80
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: 8080
