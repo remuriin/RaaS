@@ -19,6 +19,7 @@ const EXAMPLE_URL = 'https://rag.remservers.me/i/<your-service-id>'
 const SECTIONS = [
   { id: 'how-it-works', label: 'How it works' },
   { id: 'quick-start', label: 'Quick start' },
+  { id: 'writing-files', label: 'Writing good files' },
   { id: 'authentication', label: 'Authentication' },
   { id: 'ask', label: 'Ask a question' },
   { id: 'files', label: 'Manage files' },
@@ -43,6 +44,85 @@ const HOW = [
     text: 'If your files don\'t cover a question, the reply says that plainly and the response carries "answered": false, so your app can handle it.',
   },
 ]
+
+// What makes a file answer well. Each rule follows from one fact: the service finds the section that
+// matches a question and repeats what it says. It does not read the whole file, and it does not deduce.
+const RULES = [
+  {
+    title: 'State each fact outright',
+    text: 'The service repeats what is written. It does not add things up or read between the lines.',
+    weak: 'A table of dates the reader has to work out',
+    good: 'Refunds take 5 to 7 business days.',
+  },
+  {
+    title: 'One subject per heading, and name it',
+    text: 'A file is cut at its headings, and the heading is searched along with the text under it.',
+    weak: 'Other information',
+    good: 'Refund policy',
+  },
+  {
+    title: "Write the question's words into the answer",
+    text: 'A section is found when it sounds like the question. Name the thing, do not say "it".',
+    weak: 'It takes 5 to 7 days.',
+    good: 'A refund takes 5 to 7 business days.',
+  },
+  {
+    title: 'Each section stands on its own',
+    text: 'A section is read without the ones around it, so repeat a detail where it is needed.',
+    weak: 'As mentioned above, the same fee applies.',
+    good: 'The cancellation fee is ₱20.',
+  },
+  {
+    title: 'Put a complete list in one place',
+    text: 'A question is answered from about 5 sections. A list spread over a whole file comes back incomplete.',
+    weak: 'One plan described in each of twelve sections',
+    good: 'One section, "All plans", that lists every plan',
+  },
+  {
+    title: 'Say what is not offered',
+    text: 'Something the files never mention is answered with "I don\'t have that info yet".',
+    weak: 'Nothing about shipping abroad',
+    good: 'We do not ship outside the Philippines.',
+  },
+  {
+    title: 'One file per topic, kept current',
+    text: 'Two files that disagree give answers that disagree. Delete the old one, then upload the new one.',
+    weak: 'prices-2025.md and prices-new.md, both stored',
+    good: 'One prices.md, replaced when prices change',
+  },
+]
+
+const STORE_EXAMPLE = `# Acme Store: Returns and Refunds
+
+## Refund policy
+A refund is issued within 5 to 7 business
+days after we receive the returned item.
+
+## How to return an item
+1. Open "Orders" in your Acme Store account.
+2. Tap "Return an item" and choose a reason.
+3. Print the prepaid return label.
+
+## What cannot be returned
+We do not accept returns of opened food,
+gift cards, or items bought more than
+30 days ago.`
+
+const COURSE_EXAMPLE = `# Biology 101: Course Guide
+
+## Grading
+The final grade is 40% exams, 30% lab
+reports, 20% quizzes and 10% attendance.
+
+## How to submit a lab report
+1. Write the report using the lab template.
+2. Save it as a PDF.
+3. Upload it to the class portal before
+   Friday, 5:00 pm.
+
+## What is not accepted
+Late lab reports are not accepted.
+Reports sent by email are not accepted.`
 
 const STEPS = [
   {
@@ -159,6 +239,59 @@ function DocsPage() {
               </Link>
             )}
           </div>
+        </Card>
+
+        <Card className="scroll-mt-24 p-6" id="writing-files">
+          <h2 className="text-h3">Writing good files</h2>
+          <p className="mt-2 max-w-2xl text-fg-2">
+            An answer is only as good as the file behind it. The service finds the section of a file that matches a
+            question and answers from that section. It does not read the whole file, and it does not work things out.
+            Seven rules follow from that.
+          </p>
+          <ol className="mt-6 grid gap-x-10 gap-y-7 sm:grid-cols-2">
+            {RULES.map((rule, index) => (
+              <li key={rule.title} className="flex gap-4">
+                <span className="font-mono text-h3 text-accent-fg">{index + 1}</span>
+                <div className="min-w-0">
+                  <h3 className="font-medium text-fg">{rule.title}</h3>
+                  <p className="mt-1 text-fg-2">{rule.text}</p>
+                  <dl className="mt-2 grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 text-small">
+                    <dt className="text-fg-3">Weak</dt>
+                    <dd className="text-fg-2">{rule.weak}</dd>
+                    <dt className="font-medium text-success">Good</dt>
+                    <dd className="text-fg">{rule.good}</dd>
+                  </dl>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <h3 className="mt-9 text-caption text-fg-2">The same shape, on any subject</h3>
+          <div className="mt-3 grid gap-4 lg:grid-cols-2">
+            <CodeBlock label="A store" language="markdown" code={STORE_EXAMPLE} copyable={false} />
+            <CodeBlock label="A course" language="markdown" code={COURSE_EXAMPLE} copyable={false} />
+          </div>
+
+          <h3 className="mt-9 text-caption text-fg-2">Check a file</h3>
+          <p className="mt-2 max-w-2xl text-fg-2">
+            Ask the chat test what your own users would ask, and read the sources under each answer. A wrong section,
+            or "Not answered from your files", means that section needs rewriting, usually by rule 1 or 3. A PDF with
+            real text and headings converts best. After uploading a scan, check its numbers and tables.
+          </p>
+
+          <h3 className="mt-9 text-caption text-fg-2">Start from a template</h3>
+          <p className="mt-2 max-w-2xl text-fg-2">
+            A markdown file with the right shape and a note on each part. Replace the text in angle brackets with your
+            own.
+          </p>
+          <Alert tone="warning" title="Delete the notes before uploading" className="mt-4 max-w-2xl" live={false}>
+            The template explains itself in notes that start with <code className="font-mono text-small">{'<!--'}</code>{' '}
+            and end with <code className="font-mono text-small">{'-->'}</code>. A file is stored exactly as written, so
+            a note left in it is read, searched, and can turn up in an answer.
+          </Alert>
+          <a href="/rem-raas-template.md" download className={cx(buttonClass({ variant: 'secondary' }), 'mt-5')}>
+            Download the template
+          </a>
         </Card>
 
         <Card className="scroll-mt-24 p-6" id="authentication">

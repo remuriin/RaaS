@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { cx } from '../../lib/cx'
 import { CopyButton } from './Copy'
 
-export type CodeLanguage = 'shell' | 'javascript' | 'python' | 'java' | 'php' | 'json' | 'http'
+export type CodeLanguage = 'shell' | 'javascript' | 'python' | 'java' | 'php' | 'json' | 'http' | 'markdown'
 
 interface CodeBlockProps {
   /** What the code is: "curl", "Response" */
@@ -19,7 +19,9 @@ interface CodeBlockProps {
 
 // How a comment starts, and the words that are part of the language itself
 const SLASHES = '\\/\\/'
-const COMMENT: Record<CodeLanguage, string | null> = { shell: '#', python: '#', javascript: SLASHES, java: SLASHES, php: SLASHES, json: null, http: null }
+const COMMENT: Record<CodeLanguage, string | null> = { shell: '#', python: '#', javascript: SLASHES, java: SLASHES, php: SLASHES, json: null, http: null, markdown: null }
+// A whole line that is drawn like a key: a header's name, a markdown heading
+const LINE_KEY: Partial<Record<CodeLanguage, string>> = { http: '^[A-Za-z-]+(?=:)', markdown: '^#{1,3} .*$' }
 const KEYWORDS: Record<CodeLanguage, string | null> = {
   shell: 'curl|export',
   javascript: 'const|let|await|async|import|from|return|new',
@@ -28,16 +30,17 @@ const KEYWORDS: Record<CodeLanguage, string | null> = {
   php: 'echo|return',
   json: null,
   http: null,
+  markdown: null,
 }
 const NEVER = '(?!)'
 
 // One pass over the code: a comment to the end of its line, a string (followed by ":" it is a key),
-// $VARIABLES, true/false/null and numbers, -flags, and the language's own words. A header's name counts as a key.
+// $VARIABLES, true/false/null and numbers, -flags, and the language's own words. A header's name and a markdown heading count as a key.
 // A string is matched before a comment sign inside it is ever looked at, so "https://…" and "#fff" stay strings.
 // shortcut: knows only what the snippets on this site contain, use a real highlighter for arbitrary code
 function tokens(language: CodeLanguage): RegExp {
   const comment = COMMENT[language] ? `${COMMENT[language]}.*$` : NEVER
-  const header = language === 'http' ? '^[A-Za-z-]+(?=:)' : NEVER
+  const header = LINE_KEY[language] ?? NEVER
   return new RegExp(
     `(${comment})` +
       '|("(?:[^"\\\\]|\\\\.)*"|\'(?:[^\'\\\\]|\\\\.)*\'|`(?:[^`\\\\]|\\\\.)*`)(\\s*:)?' +

@@ -1,5 +1,5 @@
 import { CircleNotchIcon, FileTextIcon, FolderOpenIcon, TrashIcon, UploadSimpleIcon, XIcon } from '@phosphor-icons/react'
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { useRef, useState, type DragEvent } from 'react'
 import { NotReady } from '../../../../../components/NotReady'
 import { Alert } from '../../../../../components/ui/Alert'
@@ -213,6 +213,16 @@ function DropZone({ onFiles }: { onFiles: (files: File[]) => void }) {
           chat test afterwards to check it was read correctly.
         </span>
       </button>
+      <p className="px-6 pb-6 text-center text-small text-fg-3">
+        <Link to="/docs" hash="writing-files" className="rounded text-accent-fg hover:underline">
+          How to write files that answer well
+        </Link>
+        {' · '}
+        <a href="/rem-raas-template.md" download className="rounded text-accent-fg hover:underline">
+          Download a template
+        </a>{' '}
+        (delete its notes before uploading, or they are read like the rest of the file)
+      </p>
       <input
         ref={input}
         type="file"
