@@ -43,7 +43,7 @@ The message is written for end users and can be shown as is. One error also carr
 | 403 | The service belongs to another account, or the account's email isn't verified yet (`code: "email_not_verified"`) |
 | 404 | Unknown service, file or route |
 | 409 | Not allowed in the current state: service limit reached, service not active yet, file name already exists |
-| 413 | File larger than 500 KB |
+| 413 | File larger than 500 KB, or a question request larger than 100 KB (the message names the limit) |
 | 429 | Too many requests: more than 5 per second from one IP address, or more than 5 uploads waiting their turn on one service. Wait a few seconds |
 | 415 | Upload not sent as markdown or plain text |
 | 502 | The service's process is not responding |

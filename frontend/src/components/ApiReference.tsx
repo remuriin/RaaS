@@ -70,7 +70,7 @@ const ERRORS = [
   { status: '401', means: 'The API key is missing or not valid.' },
   { status: '404', means: 'No such file or route.' },
   { status: '409', means: 'A file with that name is already stored. Delete it first.' },
-  { status: '413', means: 'The file is larger than 500 KB.' },
+  { status: '413', means: 'The file is larger than 500 KB, or a question with its history is larger than 100 KB.' },
   { status: '415', means: 'The upload was not sent as markdown or plain text.' },
   { status: '503', means: 'The model is busy or rate limited. Retry shortly.' },
 ]
