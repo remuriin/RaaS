@@ -1,6 +1,6 @@
 import { CaretRightIcon, ChatTextIcon, InfoIcon, PaperPlaneRightIcon } from '@phosphor-icons/react'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { Suspense, lazy, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { Suspense, lazy, useEffect, useRef, useState, type ComponentProps, type FormEvent, type KeyboardEvent } from 'react'
 import { NotReady } from '../../../../../components/NotReady'
 import { Alert } from '../../../../../components/ui/Alert'
 import { Button } from '../../../../../components/ui/Button'
@@ -9,7 +9,7 @@ import { Switch } from '../../../../../components/ui/Switch'
 import { ask, clearChat } from '../../../../../lib/chat'
 import { cx } from '../../../../../lib/cx'
 import { useService } from '../../../../../lib/queries'
-import { asking as askingStore, chats, type ChatMessage } from '../../../../../lib/session'
+import { asking as askingStore, chats, markdownOn, type ChatMessage } from '../../../../../lib/session'
 import { useStore } from '../../../../../lib/store'
 import { HISTORY_CHARS, HISTORY_MESSAGES, MAX_QUESTION_LENGTH, type AnswerSource } from '../../../../../lib/types'
 
@@ -28,7 +28,9 @@ function ChatPage() {
   const messages = useStore(chats)[id] ?? NO_MESSAGES
   const waiting = useStore(askingStore)[id] ?? false
   const [question, setQuestion] = useState('')
-  const [markdown, setMarkdown] = useState(false)
+  // kept outside the page, like the conversation, so the switch is still where it was left after a visit to another tab
+  const markdown = useStore(markdownOn)[id] ?? false
+  const setMarkdown = (on: boolean) => markdownOn.set((all) => ({ ...all, [id]: on }))
   const end = useRef<HTMLDivElement>(null)
   const box = useRef<HTMLTextAreaElement>(null)
 
@@ -196,7 +198,7 @@ function Message({ message, onRetry, busy }: { message: ChatMessage; onRetry: (q
           <Suspense fallback={<p className="whitespace-pre-wrap">{message.text}</p>}>
             <div className="prose-answer">
               {/* no images: an answer could otherwise make the browser fetch a picture from anywhere */}
-              <Markdown disallowedElements={['img']} unwrapDisallowed>
+              <Markdown disallowedElements={['img']} unwrapDisallowed components={{ a: AnswerLink }}>
                 {message.text}
               </Markdown>
             </div>
@@ -214,6 +216,16 @@ function Message({ message, onRetry, busy }: { message: ChatMessage; onRetry: (q
         </p>
       )}
     </div>
+  )
+}
+
+/** A link inside an answer opens in a new tab: following it in this one would throw the conversation away. */
+function AnswerLink({ node: _node, children, ...props }: ComponentProps<'a'> & { node?: unknown }) {
+  return (
+    <a {...props} target="_blank" rel="noopener noreferrer">
+      {children}
+      <span className="sr-only"> (opens in a new tab)</span>
+    </a>
   )
 }
 

@@ -118,7 +118,10 @@ export function ApiReference({ url }: { url: string }) {
           </Term>
           <Term name="markdown" type="boolean, default false">
             Send <code className="font-mono text-small text-fg">true</code> if your app renders markdown. Otherwise
-            answers are plain text with line breaks.
+            answers are plain text with line breaks. A markdown answer uses only what it needs, and only from this
+            list: numbered and bulleted lists, <code className="font-mono text-small text-fg">##</code> headings (when
+            an answer covers more than one subject), bold, links and inline code. It never contains tables, images,
+            quote blocks, divider lines or HTML, so any standard markdown renderer can show it.
           </Term>
           <Term name="topK" type="integer 1 to 20, default 5">
             How many passages from your files the answer may draw on.

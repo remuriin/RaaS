@@ -15,6 +15,9 @@ export type ChatMessage =
 /** The chat test conversation of each service. */
 export const chats = createStore<Record<string, ChatMessage[]>>({})
 
+/** Whether "Markdown answers" is switched on in each service's chat test. Off until it is turned on. */
+export const markdownOn = createStore<Record<string, boolean>>({})
+
 /** Which services are waiting for an answer right now. */
 export const asking = createStore<Record<string, boolean>>({})
 
