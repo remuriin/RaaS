@@ -179,11 +179,21 @@ await fetch(`/api/instances/${id}/documents/${encodeURIComponent(file.name)}`, {
 **`POST /api/instances/:id/query`** → `200` `Answer`
 
 ```json
-{ "question": "What do staff wear?", "markdown": false }
+{
+  "question": "and for exchanges?",
+  "markdown": false,
+  "history": [
+    { "role": "user", "content": "How long do refunds take?" },
+    { "role": "assistant", "content": "Refunds take 5 to 7 business days." }
+  ]
+}
 ```
 
 - `question` is required, at most 2000 characters. `markdown` is optional (default `false`): send `true` if the page renders markdown, otherwise answers are plain text with line breaks. `topK` is optional (1 to 20, default 5): how many passages from the files the answer may draw on.
-- There is no conversation memory; each question stands alone.
+- `history` is optional: the earlier messages of the conversation, oldest first, each `{ "role": "user" | "assistant", "content": text }`. The service first rewrites a follow-up ("and for exchanges?") into a full question ("How long do exchanges take?") using them, then searches and answers with that. Nothing is stored: the caller keeps the conversation and sends it each time.
+- Of `history`, only the last 6 messages and the first 500 characters of each are used, so the whole conversation may be sent. A wrong shape (not a list, another role, empty content) is a `400`. The whole request can be at most 100 KB (`413`).
+- Without `history`, or with an empty list, the question is answered on its own and no extra model call is made.
+- If the model is busy while rewriting, the service retries 3 times and then answers `503`. If the rewrite comes back empty, the question is used as it was sent.
 - A reply can take a few seconds, longer when the model is rate limited.
 - These questions count in the service's `queries` numbers.
 

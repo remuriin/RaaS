@@ -1,6 +1,7 @@
 import { ApiError, api } from './api'
 import { keys, queryClient } from './queries'
 import { asking, chats, nextId, type ChatMessage } from './session'
+import { HISTORY_CHARS, HISTORY_MESSAGES, type ChatTurn } from './types'
 
 function add(serviceId: string, message: ChatMessage): void {
   chats.set((all) => ({ ...all, [serviceId]: [...(all[serviceId] ?? []), message] }))
@@ -23,12 +24,20 @@ function describe(error: unknown): { title: string; detail: string } {
   }
 }
 
+/** The conversation so far, as much of it as the service uses. A question that failed has no answer, so only its bubble counts. */
+function historyOf(serviceId: string): ChatTurn[] {
+  return (chats.get()[serviceId] ?? [])
+    .flatMap((message) => (message.role === 'error' ? [] : [{ role: message.role, content: message.text.slice(0, HISTORY_CHARS) }]))
+    .slice(-HISTORY_MESSAGES)
+}
+
 /** Sends one question to a service's chat test. Runs outside the page, so the answer still lands if the tab was switched. */
 export async function ask(serviceId: string, question: string, markdown: boolean): Promise<void> {
+  const history = historyOf(serviceId)
   add(serviceId, { id: nextId(), role: 'user', text: question })
   asking.set((all) => ({ ...all, [serviceId]: true }))
   try {
-    const reply = await api.ask(serviceId, question, markdown)
+    const reply = await api.ask(serviceId, question, markdown, history)
     add(serviceId, {
       id: nextId(),
       role: 'assistant',

@@ -1,7 +1,7 @@
 import { signOut } from 'firebase/auth'
 import { auth } from './firebase'
 import { leaveNotice } from './session'
-import type { Answer, NewKey, Service, StoredFile } from './types'
+import type { Answer, ChatTurn, NewKey, Service, StoredFile } from './types'
 
 /** An error from the management API. `message` is written for end users and can be shown as is. */
 export class ApiError extends Error {
@@ -105,6 +105,6 @@ export const api = {
   deleteFile: (id: string, name: string) =>
     request<void>(`/instances/${id}/documents/${encodeURIComponent(name)}`, { method: 'DELETE' }),
 
-  ask: (id: string, question: string, markdown: boolean) =>
-    request<Answer>(`/instances/${id}/query`, json('POST', { question, markdown })),
+  ask: (id: string, question: string, markdown: boolean, history: ChatTurn[]) =>
+    request<Answer>(`/instances/${id}/query`, json('POST', { question, markdown, history })),
 }

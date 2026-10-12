@@ -11,7 +11,7 @@ import { cx } from '../../../../../lib/cx'
 import { useService } from '../../../../../lib/queries'
 import { asking as askingStore, chats, type ChatMessage } from '../../../../../lib/session'
 import { useStore } from '../../../../../lib/store'
-import { MAX_QUESTION_LENGTH, type AnswerSource } from '../../../../../lib/types'
+import { HISTORY_CHARS, HISTORY_MESSAGES, MAX_QUESTION_LENGTH, type AnswerSource } from '../../../../../lib/types'
 
 // The markdown renderer is only downloaded when an answer actually needs it
 const Markdown = lazy(() => import('react-markdown'))
@@ -128,11 +128,20 @@ function ChatPage() {
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
           <Switch checked={markdown} onChange={setMarkdown} label="Markdown answers" />
-          <p className="text-small text-fg-3">
-            {left <= 200
-              ? `${left} characters left`
-              : 'Each question is answered on its own. Test questions count in your stats.'}
-          </p>
+          {left <= 200 && <p className="text-small text-fg-3">{left} characters left</p>}
+        </div>
+        <div className="mt-4 rounded-lg border border-line bg-inset px-4 py-3">
+          <h3 className="text-caption text-fg-2">Limits of the chat test</h3>
+          <ul className="mt-1.5 list-disc space-y-1 pl-4 text-small text-fg-2">
+            <li>
+              Follow-up questions work. The last {HISTORY_MESSAGES} messages of this conversation ({HISTORY_MESSAGES / 2}{' '}
+              questions and their answers) are sent along with each question.
+            </li>
+            <li>Only the first {HISTORY_CHARS} characters of each of those messages are used.</li>
+            <li>A question can be at most {MAX_QUESTION_LENGTH.toLocaleString('en-US')} characters.</li>
+            <li>Nothing is saved. The conversation lives in this tab, and "Clear conversation" starts fresh.</li>
+            <li>Test questions count in your stats.</li>
+          </ul>
         </div>
         {messages.length > 0 && (
           <button

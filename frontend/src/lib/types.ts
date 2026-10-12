@@ -36,6 +36,16 @@ export interface Answer {
   answered: boolean
 }
 
+/** One earlier message of a conversation, sent along with a question so a follow-up is understood. */
+export interface ChatTurn {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+/** How much of a conversation a service uses: the last messages, and the start of each. */
+export const HISTORY_MESSAGES = 6
+export const HISTORY_CHARS = 500
+
 export interface NewKey {
   apiKey: string
   keyPrefix: string

@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { cx } from '../lib/cx'
+import { HISTORY_CHARS, HISTORY_MESSAGES } from '../lib/types'
 import { Card } from './ui/Card'
 import { CodeBlock } from './ui/CodeBlock'
 
@@ -88,7 +89,8 @@ export function ApiReference({ url }: { url: string }) {
       <Card className={cx('p-6', section)} id="ask">
         <h2 className="text-h3">Ask a question</h2>
         <p className="mt-2 max-w-2xl text-fg-2">
-          Send the question as JSON. Each question stands alone: there is no conversation memory between requests.
+          Send the question as JSON. Nothing is remembered between requests: for a follow-up, your app sends the earlier
+          messages along in <code className="font-mono text-small text-fg">history</code>.
         </p>
 
         <div className="mt-5 inline-flex rounded-lg border border-line bg-inset p-1" role="group" aria-label="Example language">
@@ -120,6 +122,13 @@ export function ApiReference({ url }: { url: string }) {
           </Term>
           <Term name="topK" type="integer 1 to 20, default 5">
             How many passages from your files the answer may draw on.
+          </Term>
+          <Term name="history" type="array, optional">
+            The earlier messages of the conversation, oldest first, each as{' '}
+            <code className="font-mono text-small text-fg">{'{ "role": "user" | "assistant", "content": "…" }'}</code>.
+            With it, a follow-up such as "and for exchanges?" is understood. Only the last {HISTORY_MESSAGES} messages
+            and the first {HISTORY_CHARS} characters of each are used, so you can send the whole conversation. Leave it
+            out and the question is answered on its own.
           </Term>
         </dl>
 
@@ -179,7 +188,9 @@ export function ApiReference({ url }: { url: string }) {
           ))}
         </div>
         <p className="mt-6 text-fg-2">
-          Limits: 5 requests per second from one IP address, 500 KB per file, 2,000 characters per question.
+          Limits: 5 requests per second from one IP address, 500 KB per file, 2,000 characters per question, 100 KB per
+          question request. Of a conversation, the last {HISTORY_MESSAGES} messages and {HISTORY_CHARS} characters of
+          each are used.
         </p>
       </Card>
     </>
