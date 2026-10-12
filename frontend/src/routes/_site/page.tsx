@@ -53,7 +53,7 @@ function LandingPage() {
       <section className={`${wrap} grid grid-cols-1 items-center gap-12 pt-12 pb-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16 lg:pt-20 lg:pb-28`}>
         <div>
           <h1 className="animate-rise text-4xl leading-[1.08] font-semibold tracking-tight text-balance sm:text-5xl lg:text-[3.25rem]">
-            An API the answers from your documents
+            An API that answers from your documents
           </h1>
           <p className="mt-6 max-w-[34rem] animate-rise text-lg leading-8 text-fg-2 [animation-delay:80ms]">
             Upload your documents, get an address and a key, and let your app ask questions. Every answer names its
@@ -238,8 +238,8 @@ function LandingPage() {
             No SDK to install. Anything that can send an HTTP request can ask your service a question.
           </p>
           <div className="reveal mt-10 grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
-            <CodeBlock label="Request" code={REQUEST} live />
-            <CodeBlock label="Response" code={RESPONSE} copyable={false} live />
+            <CodeBlock label="Request" language="shell" code={REQUEST} live />
+            <CodeBlock label="Response" language="json" code={RESPONSE} copyable={false} live />
           </div>
         </div>
       </section>

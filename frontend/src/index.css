@@ -221,20 +221,27 @@
     --fade: 100%;
   }
 }
-.code-live:is(:hover, :focus-within) [data-tok='key'] {
+/* The colours themselves. An ordinary code box (.code-colored) always has them; a live one gets them under the pointer. */
+:is(.code-colored, .code-live:is(:hover, :focus-within)) [data-tok='key'],
+:is(.code-colored, .code-live:is(:hover, :focus-within)) [data-tok='keyword'] {
   color: var(--accent-text);
 }
-.code-live:is(:hover, :focus-within) [data-tok='string'] {
+:is(.code-colored, .code-live:is(:hover, :focus-within)) [data-tok='string'] {
   color: var(--status-success);
 }
-.code-live:is(:hover, :focus-within) [data-tok='value'] {
+:is(.code-colored, .code-live:is(:hover, :focus-within)) [data-tok='value'] {
   color: var(--status-warning);
 }
-.code-live:is(:hover, :focus-within) [data-tok='flag'] {
+:is(.code-colored, .code-live:is(:hover, :focus-within)) [data-tok='flag'] {
   color: var(--text-secondary);
 }
+:is(.code-colored, .code-live:is(:hover, :focus-within)) [data-tok='comment'] {
+  color: var(--text-muted);
+  font-style: italic;
+}
 @media (hover: none) {
-  .code-live [data-tok='key'] {
+  .code-live [data-tok='key'],
+  .code-live [data-tok='keyword'] {
     color: var(--accent-text);
   }
   .code-live [data-tok='string'] {
@@ -245,6 +252,10 @@
   }
   .code-live [data-tok='flag'] {
     color: var(--text-secondary);
+  }
+  .code-live [data-tok='comment'] {
+    color: var(--text-muted);
+    font-style: italic;
   }
 }
 

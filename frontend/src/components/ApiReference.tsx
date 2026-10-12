@@ -2,26 +2,38 @@ import { useState, type ReactNode } from 'react'
 import { cx } from '../lib/cx'
 import { HISTORY_CHARS, HISTORY_MESSAGES } from '../lib/types'
 import { Card } from './ui/Card'
-import { CodeBlock } from './ui/CodeBlock'
+import { CodeBlock, type CodeLanguage } from './ui/CodeBlock'
 
 type Language = 'curl' | 'JavaScript' | 'Python'
 const LANGUAGES: Language[] = ['curl', 'JavaScript', 'Python']
+const SYNTAX: Record<Language, CodeLanguage> = { curl: 'shell', JavaScript: 'javascript', Python: 'python' }
 
 function askSnippet(language: Language, url: string): string {
   if (language === 'curl') {
-    return `curl -X POST "${url}/query" \\
+    // the comments sit above the command: a comment between its lines would cut it in two
+    return `# Authorization: your API key, read here from the API_KEY variable. Keep the key on your server.
+# Content-Type: says the body is JSON.
+# "markdown": true asks for a markdown answer.
+# Leave it out, or send false, for plain text (the default).
+curl -X POST "${url}/query" \\
   -H "Authorization: Bearer $API_KEY" \\
   -H "Content-Type: application/json" \\
-  -d '{"question":"How long do refunds take?"}'`
+  -d '{"question":"How long do refunds take?","markdown":true}'`
   }
   if (language === 'JavaScript') {
     return `const res = await fetch("${url}/query", {
   method: "POST",
   headers: {
+    // your API key, read here from the API_KEY variable. Keep the key on your server.
     Authorization: \`Bearer \${process.env.API_KEY}\`,
+    // says the body is JSON
     "Content-Type": "application/json",
   },
-  body: JSON.stringify({ question: "How long do refunds take?" }),
+  body: JSON.stringify({
+    question: "How long do refunds take?",
+    // true asks for a markdown answer. Leave it out, or send false, for plain text (the default).
+    markdown: true,
+  }),
 });
 
 const { answer, sources, answered } = await res.json();`
@@ -31,8 +43,14 @@ import requests
 
 res = requests.post(
     "${url}/query",
+    # your API key, read here from the API_KEY variable. Keep the key on your server.
+    # requests adds the Content-Type header itself when the body is given as json=.
     headers={"Authorization": f"Bearer {os.environ['API_KEY']}"},
-    json={"question": "How long do refunds take?"},
+    json={
+        "question": "How long do refunds take?",
+        # True asks for a markdown answer. Leave it out, or send False, for plain text (the default).
+        "markdown": True,
+    },
 )
 
 print(res.json()["answer"])`
@@ -109,7 +127,7 @@ export function ApiReference({ url }: { url: string }) {
             </button>
           ))}
         </div>
-        <CodeBlock className="mt-3" label="Request" code={askSnippet(language, url)} />
+        <CodeBlock className="mt-3" label="Request" language={SYNTAX[language]} code={askSnippet(language, url)} />
 
         <h3 className="mt-7 text-caption text-fg-2">What you can send</h3>
         <dl className="mt-2 grid gap-x-6 gap-y-3 sm:grid-cols-[max-content_1fr]">
@@ -135,7 +153,7 @@ export function ApiReference({ url }: { url: string }) {
           </Term>
         </dl>
 
-        <CodeBlock className="mt-7" label="Response" code={RESPONSE} copyable={false} />
+        <CodeBlock className="mt-7" label="Response" language="json" code={RESPONSE} copyable={false} />
         <dl className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-[max-content_1fr]">
           <Term name="answer" type="string">
             The reply, written only from your files.
@@ -174,7 +192,7 @@ export function ApiReference({ url }: { url: string }) {
             Only the markdown is kept, not the original file. The request returns once the file is ready, which takes
             seconds for text and up to a few minutes for a long PDF.
           </p>
-          <CodeBlock className="mt-5" label="Add a file" code={uploadSnippet(url)} />
+          <CodeBlock className="mt-5" label="Add a file" language="shell" code={uploadSnippet(url)} />
         </div>
         <ul>
           {ENDPOINTS.map((endpoint) => (
