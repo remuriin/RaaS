@@ -43,9 +43,9 @@ The message is written for end users and can be shown as is. One error also carr
 | 403 | The service belongs to another account, or the account's email isn't verified yet (`code: "email_not_verified"`) |
 | 404 | Unknown service, file or route |
 | 409 | Not allowed in the current state: service limit reached, service not active yet, file name already exists |
-| 413 | File larger than 500 KB, or a question request larger than 100 KB (the message names the limit) |
+| 413 | A PDF larger than 10 MB, another file larger than 500 KB, or a question request larger than 100 KB (the message names the limit) |
 | 429 | Too many requests: more than 5 per second from one IP address, or more than 5 uploads waiting their turn on one service. Wait a few seconds |
-| 415 | Upload not sent as markdown or plain text |
+| 415 | The upload's `Content-Type` does not match the ending of its name |
 | 502 | The service's process is not responding |
 | 503 | The model is busy or rate limited; retry shortly |
 
@@ -152,12 +152,22 @@ These manage the service's `.md` files on the owner's behalf. They need the serv
 
 **`POST /api/instances/:id/documents/:name`** → `201`
 
-The request body is the raw file content, **not JSON**, with `Content-Type: text/markdown`:
+The request body is the file itself, **not JSON**, sent with the `Content-Type` of its kind:
+
+| Ending | `Content-Type` | Limit | What happens to it |
+|---|---|---|---|
+| `.md` | `text/markdown` | 500 KB | stored as it is |
+| `.txt` | `text/plain` | 500 KB | stored as it is |
+| `.html`, `.htm` | `text/html` | 500 KB | written out as markdown by a model |
+| `.xml` | `application/xml` | 500 KB | written out as markdown by a model |
+| `.pdf` | `application/pdf` | 10 MB | written out as markdown by a model, scanned pages included |
+
+Only the markdown is kept, never the original file. The web app picks the type from the file's ending (`fileKind` in `lib/types.ts`):
 
 ```ts
 await fetch(`/api/instances/${id}/documents/${encodeURIComponent(file.name)}`, {
   method: "POST",
-  headers: { Authorization: `Bearer ${token}`, "Content-Type": "text/markdown" },
+  headers: { Authorization: `Bearer ${token}`, "Content-Type": fileKind(file.name).type },
   body: file, // a File from an <input type="file">
 });
 ```
@@ -166,10 +176,11 @@ await fetch(`/api/instances/${id}/documents/${encodeURIComponent(file.name)}`, {
 { "id": "…", "source": "handbook.md", "chunks": 1, "status": "ready" }
 ```
 
-- The request only returns once the file is fully processed, which can take from a second to a minute or more. Show a progress state and don't time out early.
-- `:name` must end in `.md` and use only letters, numbers, dots, dashes and underscores (max 100 characters): `400` otherwise.
+- The request only returns once the file is fully processed: a second for text, up to a few minutes for a long PDF. Show a progress state and don't time out early.
+- A conversion has about 4 minutes. A file that needs longer (a PDF past roughly 60 dense pages) is refused whole with a `400` saying to split it; nothing is stored.
+- `:name` must end in one of the endings above and use only letters, numbers, dots, dashes and underscores (max 100 characters): `400` otherwise.
 - `409` if a file with that name already exists. There is no overwrite: delete, then upload again.
-- `400` empty or non-text file, or one that would be split into more than 1,000 pieces (very many tiny headings); `413` over 500 KB; `415` wrong content type; `429` when 5 uploads are already waiting on that service.
+- `400` empty file, a text file that is not text, a `.pdf` that is not a PDF, or one that would be split into more than 1,000 pieces (very many tiny headings); `413` over the limit of its kind; `415` a content type that does not match the ending; `429` when 5 uploads are already waiting on that service.
 - On `500`/`503` the upload is kept as a `failed` entry in the list; uploading the same name again replaces that failed entry.
 
 **`DELETE /api/instances/:id/documents/:name`** → `204` with an empty body (`404` if there is no such file)
@@ -220,7 +231,7 @@ await fetch(`/api/instances/${id}/documents/${encodeURIComponent(file.name)}`, {
 | `failed` | no (409) | no (409) | yes | yes |
 | `deleting` | no (409) | no (409) | no point | already happening |
 
-**Limits.** 3 services per account, 500 KB per file, 1,000 pieces per file, 5 requests per second per IP address (over that: `429` with a JSON body), 5 uploads waiting per service.
+**Limits.** 3 services per account, 10 MB per PDF and 500 KB per other file, 1,000 pieces per file, 5 requests per second per IP address (over that: `429` with a JSON body), 5 uploads waiting per service.
 
 ## The client's own app (for the API guide page)
 

@@ -54,8 +54,8 @@ const uploadSnippet = (url: string) => `curl -X POST "${url}/documents/handbook.
 const ENDPOINTS = [
   { method: 'POST', path: '/query', does: 'Ask a question' },
   { method: 'GET', path: '/documents', does: 'List the stored files' },
-  { method: 'POST', path: '/documents/<name>.md', does: 'Add a file (the body is the raw markdown)' },
-  { method: 'DELETE', path: '/documents/<name>.md', does: 'Delete a file' },
+  { method: 'POST', path: '/documents/<name>', does: 'Add a file (the body is the file itself)' },
+  { method: 'DELETE', path: '/documents/<name>', does: 'Delete a file' },
   { method: 'GET', path: '/health', does: 'Check the service is up (no key needed)' },
 ]
 
@@ -70,8 +70,8 @@ const ERRORS = [
   { status: '401', means: 'The API key is missing or not valid.' },
   { status: '404', means: 'No such file or route.' },
   { status: '409', means: 'A file with that name is already stored. Delete it first.' },
-  { status: '413', means: 'The file is larger than 500 KB, or a question with its history is larger than 100 KB.' },
-  { status: '415', means: 'The upload was not sent as markdown or plain text.' },
+  { status: '413', means: 'A PDF over 10 MB, another file over 500 KB, or a question with its history over 100 KB.' },
+  { status: '415', means: "The upload's Content-Type does not match the ending of its name." },
   { status: '503', means: 'The model is busy or rate limited. Retry shortly.' },
 ]
 
@@ -154,8 +154,25 @@ export function ApiReference({ url }: { url: string }) {
         <div className="p-6">
           <h2 className="text-h3">Manage files from your app</h2>
           <p className="mt-2 max-w-2xl text-fg-2">
-            Files can be added and removed with the same key. A file name ends in .md and uses letters, numbers, dots,
-            dashes and underscores. There is no overwrite: delete a file, then upload the new version.
+            Files can be added and removed with the same key. A file name uses letters, numbers, dots, dashes and
+            underscores, and its ending says what it is. There is no overwrite: delete a file, then upload the new
+            version.
+          </p>
+          <dl className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-[max-content_1fr]">
+            <Term name=".md  .txt" type="text/markdown, text/plain">
+              Stored as it is. Up to 500 KB.
+            </Term>
+            <Term name=".html  .xml" type="text/html, application/xml">
+              Written out as markdown by a model first. Up to 500 KB.
+            </Term>
+            <Term name=".pdf" type="application/pdf">
+              Written out as markdown by a model first, scanned pages included. Up to 10 MB, and about 60 pages: a
+              longer one is refused whole, so split it.
+            </Term>
+          </dl>
+          <p className="mt-4 max-w-2xl text-fg-2">
+            Only the markdown is kept, not the original file. The request returns once the file is ready, which takes
+            seconds for text and up to a few minutes for a long PDF.
           </p>
           <CodeBlock className="mt-5" label="Add a file" code={uploadSnippet(url)} />
         </div>
@@ -191,7 +208,8 @@ export function ApiReference({ url }: { url: string }) {
           ))}
         </div>
         <p className="mt-6 text-fg-2">
-          Limits: 5 requests per second from one IP address, 500 KB per file, 2,000 characters per question, 100 KB per
+          Limits: 5 requests per second from one IP address, 10 MB per PDF and 500 KB per other file, 2,000 characters
+          per question, 100 KB per
           question request. Of a conversation, the last {HISTORY_MESSAGES} messages and {HISTORY_CHARS} characters of
           each are used.
         </p>

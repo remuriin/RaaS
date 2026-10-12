@@ -13,7 +13,7 @@ import { useDeleteFile, useFiles, useService } from '../../../../../lib/queries'
 import { uploads as uploadStore } from '../../../../../lib/session'
 import { useStore } from '../../../../../lib/store'
 import { toast } from '../../../../../lib/toast'
-import type { StoredFile } from '../../../../../lib/types'
+import { FILE_ACCEPT, type StoredFile } from '../../../../../lib/types'
 import { addFiles, dismissUpload } from '../../../../../lib/uploader'
 
 export const Route = createFileRoute('/_app/services/$id/files/')({
@@ -203,14 +203,20 @@ function DropZone({ onFiles }: { onFiles: (files: File[]) => void }) {
       >
         <UploadSimpleIcon className="size-6 text-accent-fg" aria-hidden />
         <span className="mt-3 font-medium text-fg">
-          Drop .md files here, or <span className="text-accent-fg">choose files</span>
+          Drop files here, or <span className="text-accent-fg">choose files</span>
         </span>
-        <span className="mt-1 text-small text-fg-3">Markdown only, up to 500 KB each</span>
+        <span className="mt-1 text-small text-fg-3">Markdown, text, PDF, HTML or XML</span>
+        <span className="text-small text-fg-3">A PDF up to 10 MB, the others up to 500 KB each</span>
+        <span className="mt-3 max-w-md text-small text-fg-3">
+          A PDF, a web page or XML is first written out as markdown by a model. That takes a few seconds, or a few
+          minutes for a long PDF. About 60 pages is the most that fits: split a longer one. Ask a few questions in the
+          chat test afterwards to check it was read correctly.
+        </span>
       </button>
       <input
         ref={input}
         type="file"
-        accept=".md,text/markdown"
+        accept={FILE_ACCEPT}
         multiple
         className="sr-only"
         tabIndex={-1}

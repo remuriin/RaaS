@@ -2,10 +2,10 @@ import { ApiError, api } from './api'
 import { formatBytes } from './format'
 import { keys, queryClient } from './queries'
 import { nextId, uploads, type Upload } from './session'
-import { MAX_FILE_BYTES, type StoredFile } from './types'
+import { MAX_PDF_BYTES, fileKind, type StoredFile } from './types'
 
-// The same rule the service applies: 4 to 100 characters, starts with a letter or number, ends in .md
-const NAME_RULE = /^(?=.{4,100}$)[A-Za-z0-9][A-Za-z0-9._-]*\.md$/i
+// The same rule the service applies: 4 to 100 characters, starts with a letter or number, ends in one of the accepted endings
+const NAME_RULE = /^(?=.{4,100}$)[A-Za-z0-9][A-Za-z0-9._-]*\.[A-Za-z]+$/
 
 // Uploads run from here, not from the Files page, so they carry on when the person looks at another tab.
 const waitingFiles = new Map<number, File>()
@@ -17,12 +17,15 @@ function update(serviceId: string, change: (list: Upload[]) => Upload[]): void {
 
 /** Checks a file before it is sent, so an obvious "no" comes at once instead of after a round trip. */
 function whyNot(file: File, taken: Set<string>): string | null {
-  if (!/\.md$/i.test(file.name)) return 'Only .md files are accepted.'
+  const kind = fileKind(file.name)
+  if (!kind) return 'Only .md, .txt, .pdf, .html and .xml files are accepted.'
   if (!NAME_RULE.test(file.name)) {
     return 'Rename it first: letters, numbers, dots, dashes and underscores only, 100 characters at most.'
   }
   if (file.size === 0) return 'This file is empty.'
-  if (file.size > MAX_FILE_BYTES) return `This file is ${formatBytes(file.size)}. The limit is 500 KB.`
+  if (file.size > kind.max) {
+    return `This file is ${formatBytes(file.size)}. The limit is ${kind.max === MAX_PDF_BYTES ? '10 MB for a PDF' : '500 KB for this kind of file'}.`
+  }
   if (taken.has(file.name)) return 'A file with this name is already stored. Delete it first to upload a new version.'
   return null
 }
@@ -67,7 +70,7 @@ async function run(serviceId: string): Promise<void> {
         list.map((upload) => (upload.id === next.id ? { ...upload, status: 'uploading' } : upload)),
       )
       try {
-        // only returns once the file is split and indexed, which can take up to a minute
+        // only returns once the file is converted (a PDF, a web page, XML), split and indexed: seconds for text, minutes for a long PDF
         await api.uploadFile(serviceId, file)
         update(serviceId, (list) => list.filter((upload) => upload.id !== next.id))
       } catch (error) {

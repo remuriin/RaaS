@@ -1,7 +1,7 @@
 import { signOut } from 'firebase/auth'
 import { auth } from './firebase'
 import { leaveNotice } from './session'
-import type { Answer, ChatTurn, NewKey, Service, StoredFile } from './types'
+import { fileKind, type Answer, type ChatTurn, type NewKey, type Service, type StoredFile } from './types'
 
 /** An error from the management API. `message` is written for end users and can be shown as is. */
 export class ApiError extends Error {
@@ -20,7 +20,7 @@ const FALLBACK: Record<number, string> = {
   401: 'Your session has expired. Sign in again to carry on.',
   403: 'This service belongs to another account.',
   404: "That doesn't exist any more.",
-  413: 'That file is larger than 500 KB.',
+  413: 'That file is too large. A PDF can be up to 10 MB, other files up to 500 KB.',
   429: 'Too many requests. Wait a few seconds and try again.',
   502: "The server isn't responding right now. Try again in a moment.",
   503: 'The model is busy. Wait a few seconds and try again.',
@@ -100,7 +100,7 @@ export const api = {
   uploadFile: (id: string, file: File) =>
     request<{ id: string; source: string; chunks: number; status: string }>(
       `/instances/${id}/documents/${encodeURIComponent(file.name)}`,
-      { method: 'POST', headers: { 'Content-Type': 'text/markdown' }, body: file },
+      { method: 'POST', headers: { 'Content-Type': fileKind(file.name)?.type ?? 'text/markdown' }, body: file },
     ),
   deleteFile: (id: string, name: string) =>
     request<void>(`/instances/${id}/documents/${encodeURIComponent(name)}`, { method: 'DELETE' }),

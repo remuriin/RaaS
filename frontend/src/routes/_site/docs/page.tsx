@@ -28,7 +28,7 @@ const SECTIONS = [
 const HOW = [
   {
     title: 'Your files are split into pieces',
-    text: 'Each markdown file is cut at its headings into short sections, so a question can be matched to the exact part of a file that covers it.',
+    text: 'A PDF, a web page or XML is first written out as markdown. Then each file is cut at its headings into short sections, so a question can be matched to the exact part of a file that covers it.',
   },
   {
     title: 'Every piece gets a meaning, not just words',
@@ -54,8 +54,8 @@ const STEPS = [
     text: 'On the service\'s overview tab. The key is shown once, so copy it somewhere safe right away.',
   },
   {
-    title: 'Upload your markdown files',
-    text: 'On the files tab, or from your own code. Each file can be up to 500 KB.',
+    title: 'Upload your files',
+    text: 'On the files tab, or from your own code. Markdown, text, PDF, HTML or XML: a PDF up to 10 MB, the others up to 500 KB.',
   },
   {
     title: 'Ask a question',

@@ -56,7 +56,7 @@ function LandingPage() {
             An API the answers from your documents
           </h1>
           <p className="mt-6 max-w-[34rem] animate-rise text-lg leading-8 text-fg-2 [animation-delay:80ms]">
-            Upload markdown files, get an address and a key, and let your app ask questions. Every answer names its
+            Upload your documents, get an address and a key, and let your app ask questions. Every answer names its
             sources.
           </p>
           <div className="mt-9 flex animate-rise flex-col gap-3 [animation-delay:160ms] sm:flex-row">
@@ -131,7 +131,8 @@ function LandingPage() {
               <div>
                 <h3 className="text-h2">Upload your files</h3>
                 <p className="mt-2 max-w-lg text-body-lg text-fg-2">
-                  Add markdown files. They are split and indexed, and usable as soon as the upload finishes.
+                  Add markdown, text, PDF, HTML or XML files. They are split and indexed, and usable as soon as the
+                  upload finishes.
                 </p>
                 <p className="glass mt-4 inline-flex max-w-full items-center gap-2.5 rounded-lg border border-line px-3 py-2">
                   <FileTextIcon className="size-4.5 shrink-0 text-fg-3" aria-hidden />
@@ -249,7 +250,7 @@ function LandingPage() {
           <h2 className="text-h2">The limits, up front</h2>
           <dl className="reveal mt-8 grid grid-cols-2 gap-x-6 gap-y-8 lg:grid-cols-4 lg:divide-x lg:divide-line">
             <Limit value="3" unit="services" note="per account, each with its own files and key" />
-            <Limit value="500" unit="KB" note="per markdown file" />
+            <Limit value="10" unit="MB" note="per PDF, and 500 KB for other files" />
             <Limit value="15" unit="seconds" note="or so to set up a new service" />
             <Limit value="5" unit="requests" note="per second from one IP address" />
           </dl>
