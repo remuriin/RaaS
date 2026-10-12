@@ -2,59 +2,8 @@ import { useState, type ReactNode } from 'react'
 import { cx } from '../lib/cx'
 import { HISTORY_CHARS, HISTORY_MESSAGES } from '../lib/types'
 import { Card } from './ui/Card'
-import { CodeBlock, type CodeLanguage } from './ui/CodeBlock'
-
-type Language = 'curl' | 'JavaScript' | 'Python'
-const LANGUAGES: Language[] = ['curl', 'JavaScript', 'Python']
-const SYNTAX: Record<Language, CodeLanguage> = { curl: 'shell', JavaScript: 'javascript', Python: 'python' }
-
-function askSnippet(language: Language, url: string): string {
-  if (language === 'curl') {
-    // the comments sit above the command: a comment between its lines would cut it in two
-    return `# Authorization: your API key, read here from the API_KEY variable. Keep the key on your server.
-# Content-Type: says the body is JSON.
-# "markdown": true asks for a markdown answer.
-# Leave it out, or send false, for plain text (the default).
-curl -X POST "${url}/query" \\
-  -H "Authorization: Bearer $API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{"question":"How long do refunds take?","markdown":true}'`
-  }
-  if (language === 'JavaScript') {
-    return `const res = await fetch("${url}/query", {
-  method: "POST",
-  headers: {
-    // your API key, read here from the API_KEY variable. Keep the key on your server.
-    Authorization: \`Bearer \${process.env.API_KEY}\`,
-    // says the body is JSON
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    question: "How long do refunds take?",
-    // true asks for a markdown answer. Leave it out, or send false, for plain text (the default).
-    markdown: true,
-  }),
-});
-
-const { answer, sources, answered } = await res.json();`
-  }
-  return `import os
-import requests
-
-res = requests.post(
-    "${url}/query",
-    # your API key, read here from the API_KEY variable. Keep the key on your server.
-    # requests adds the Content-Type header itself when the body is given as json=.
-    headers={"Authorization": f"Bearer {os.environ['API_KEY']}"},
-    json={
-        "question": "How long do refunds take?",
-        # True asks for a markdown answer. Leave it out, or send False, for plain text (the default).
-        "markdown": True,
-    },
-)
-
-print(res.json()["answer"])`
-}
+import { LANGUAGES, SYNTAX, askSnippet, uploadSnippet, type Language } from './apiSnippets'
+import { CodeBlock } from './ui/CodeBlock'
 
 const RESPONSE = `{
   "answer": "Refunds are issued within 5 to 7 business days.",
@@ -63,11 +12,6 @@ const RESPONSE = `{
   ],
   "answered": true
 }`
-
-const uploadSnippet = (url: string) => `curl -X POST "${url}/documents/handbook.md" \\
-  -H "Authorization: Bearer $API_KEY" \\
-  -H "Content-Type: text/markdown" \\
-  --data-binary @handbook.md`
 
 const ENDPOINTS = [
   { method: 'POST', path: '/query', does: 'Ask a question' },
@@ -95,6 +39,28 @@ const ERRORS = [
 
 const section = 'scroll-mt-24'
 
+/** Picks the language of the examples. Both examples on the page follow the one choice. */
+function LanguageSwitch({ language, onChange }: { language: Language; onChange: (language: Language) => void }) {
+  return (
+    <div className="mt-5 inline-flex max-w-full flex-wrap rounded-lg border border-line bg-inset p-1" role="group" aria-label="Example language">
+      {LANGUAGES.map((item) => (
+        <button
+          key={item}
+          type="button"
+          aria-pressed={language === item}
+          onClick={() => onChange(item)}
+          className={cx(
+            'h-8 rounded-md px-3 text-small font-medium transition-colors pointer-coarse:h-10',
+            language === item ? 'bg-raised text-fg' : 'text-fg-2 hover:text-fg',
+          )}
+        >
+          {item}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 /**
  * How to call a service from an application. Used twice: on a service's "API guide" tab with its real
  * address filled in, and on the public docs page with a stand-in address.
@@ -111,22 +77,7 @@ export function ApiReference({ url }: { url: string }) {
           messages along in <code className="font-mono text-small text-fg">history</code>.
         </p>
 
-        <div className="mt-5 inline-flex rounded-lg border border-line bg-inset p-1" role="group" aria-label="Example language">
-          {LANGUAGES.map((item) => (
-            <button
-              key={item}
-              type="button"
-              aria-pressed={language === item}
-              onClick={() => setLanguage(item)}
-              className={cx(
-                'h-8 rounded-md px-3 text-small font-medium transition-colors pointer-coarse:h-10',
-                language === item ? 'bg-raised text-fg' : 'text-fg-2 hover:text-fg',
-              )}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
+        <LanguageSwitch language={language} onChange={setLanguage} />
         <CodeBlock className="mt-3" label="Request" language={SYNTAX[language]} code={askSnippet(language, url)} />
 
         <h3 className="mt-7 text-caption text-fg-2">What you can send</h3>
@@ -192,7 +143,8 @@ export function ApiReference({ url }: { url: string }) {
             Only the markdown is kept, not the original file. The request returns once the file is ready, which takes
             seconds for text and up to a few minutes for a long PDF.
           </p>
-          <CodeBlock className="mt-5" label="Add a file" language="shell" code={uploadSnippet(url)} />
+          <LanguageSwitch language={language} onChange={setLanguage} />
+          <CodeBlock className="mt-3" label="Add a file" language={SYNTAX[language]} code={uploadSnippet(language, url)} />
         </div>
         <ul>
           {ENDPOINTS.map((endpoint) => (

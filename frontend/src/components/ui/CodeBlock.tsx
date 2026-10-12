@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { cx } from '../../lib/cx'
 import { CopyButton } from './Copy'
 
-export type CodeLanguage = 'shell' | 'javascript' | 'python' | 'json' | 'http'
+export type CodeLanguage = 'shell' | 'javascript' | 'python' | 'java' | 'php' | 'json' | 'http'
 
 interface CodeBlockProps {
   /** What the code is: "curl", "Response" */
@@ -18,11 +18,14 @@ interface CodeBlockProps {
 }
 
 // How a comment starts, and the words that are part of the language itself
-const COMMENT: Record<CodeLanguage, string | null> = { shell: '#', python: '#', javascript: '\\/\\/', json: null, http: null }
+const SLASHES = '\\/\\/'
+const COMMENT: Record<CodeLanguage, string | null> = { shell: '#', python: '#', javascript: SLASHES, java: SLASHES, php: SLASHES, json: null, http: null }
 const KEYWORDS: Record<CodeLanguage, string | null> = {
   shell: 'curl|export',
   javascript: 'const|let|await|async|import|from|return|new',
-  python: 'import|from|print|as|def|return',
+  python: 'import|from|print|as|def|return|with|open',
+  java: 'import|new|String|return',
+  php: 'echo|return',
   json: null,
   http: null,
 }
