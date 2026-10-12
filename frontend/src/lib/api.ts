@@ -1,7 +1,7 @@
 import { signOut } from 'firebase/auth'
 import { auth } from './firebase'
 import { leaveNotice } from './session'
-import { fileKind, type Answer, type ChatTurn, type NewKey, type Service, type StoredFile } from './types'
+import { fileKind, type Answer, type ChatTurn, type NewKey, type Persona, type Service, type StoredFile } from './types'
 
 /** An error from the management API. `message` is written for end users and can be shown as is. */
 export class ApiError extends Error {
@@ -82,6 +82,8 @@ function json(method: string, data: unknown): RequestInit {
 export interface ServiceDetails {
   name: string
   productName: string | null
+  /** Left out when a service is created: it starts as a support agent */
+  persona?: Persona
 }
 
 export const api = {

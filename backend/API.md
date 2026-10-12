@@ -58,6 +58,7 @@ interface Service {
   id: string;                 // UUID
   name: string;               // label shown in the dashboard
   productName: string | null; // what the assistant calls itself
+  persona: "support" | "tutor" | "guide" | "reference"; // the voice it answers in
   status: ServiceStatus;
   errorMessage: string | null; // set when status is "failed"
   url: string;                // public base URL of this service's own API
@@ -113,12 +114,13 @@ interface Answer {
 **`PATCH /api/instances/:id`** → `200` the updated `Service`
 
 ```json
-{ "name": "New label", "productName": "New product name" }
+{ "name": "New label", "productName": "New product name", "persona": "tutor" }
 ```
 
-- Send either field or both. `"productName": ""` or `null` clears it.
-- `400` if neither is sent or a value is too long.
-- A changed product name is used from the very next question.
+- Send any of the three. `"productName": ""` or `null` clears it.
+- `persona` is the voice the assistant answers in: `support` (the default, for a product or a business), `tutor` (notes, courses, manuals), `guide` (stories, lore, history) or `reference` (plain, no personality). It changes who the assistant says it is and how it words a greeting and "that is not in the files". It never changes what the assistant may say: every persona answers only from the files, does not combine separate facts, refuses what is not covered, stays short and cites its sources. There is no custom persona.
+- `400` if none of the three is sent, a value is too long, or `persona` is not one of the four.
+- A changed product name or persona is used from the very next question. A new service starts as `support`.
 
 **`DELETE /api/instances/:id`** → `202`
 

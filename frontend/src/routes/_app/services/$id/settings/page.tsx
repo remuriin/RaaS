@@ -8,7 +8,8 @@ import { Card } from '../../../../../components/ui/Card'
 import { Field } from '../../../../../components/ui/Field'
 import { useService, useUpdateService } from '../../../../../lib/queries'
 import { toast } from '../../../../../lib/toast'
-import { MAX_NAME_LENGTH, type Service } from '../../../../../lib/types'
+import { cx } from '../../../../../lib/cx'
+import { MAX_NAME_LENGTH, PERSONAS, type Service } from '../../../../../lib/types'
 
 export const Route = createFileRoute('/_app/services/$id/settings/')({
   component: SettingsPage,
@@ -25,7 +26,7 @@ function SettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       {/* the key makes the form start over from the saved values whenever they change */}
-      <DetailsForm key={`${service.name}|${service.productName ?? ''}`} service={service} />
+      <DetailsForm key={`${service.name}|${service.productName ?? ''}|${service.persona}`} service={service} />
 
       <Card className="border-danger/40 p-6">
         <h2 className="text-h3">Delete this service</h2>
@@ -52,9 +53,11 @@ function DetailsForm({ service }: { service: Service }) {
   const update = useUpdateService(service.id)
   const [name, setName] = useState(service.name)
   const [productName, setProductName] = useState(service.productName ?? '')
+  const [persona, setPersona] = useState(service.persona)
   const [nameError, setNameError] = useState<string | null>(null)
 
-  const changed = name.trim() !== service.name || productName.trim() !== (service.productName ?? '')
+  const changed =
+    name.trim() !== service.name || productName.trim() !== (service.productName ?? '') || persona !== service.persona
 
   function submit(event: FormEvent) {
     event.preventDefault()
@@ -63,15 +66,13 @@ function DetailsForm({ service }: { service: Service }) {
       return
     }
     setNameError(null)
-    const productChanged = productName.trim() !== (service.productName ?? '')
+    // both are read by the service on every question, so there is nothing to restart
+    const voiceChanged = productName.trim() !== (service.productName ?? '') || persona !== service.persona
     update.mutate(
-      { name: name.trim(), productName: productName.trim() || null },
+      { name: name.trim(), productName: productName.trim() || null, persona },
       {
         onSuccess: () =>
-          toast.success(
-            'Changes saved',
-            productChanged ? 'The new product name is used from the next question.' : undefined,
-          ),
+          toast.success('Changes saved', voiceChanged ? 'The assistant answers this way from the next question.' : undefined),
       },
     )
   }
@@ -104,6 +105,40 @@ function DetailsForm({ service }: { service: Service }) {
           onChange={(event) => setProductName(event.target.value)}
           hint="What the assistant calls itself. Used from the very next question. Leave empty for none."
         />
+        <fieldset>
+          <legend className="font-medium text-fg">Persona</legend>
+          <p className="mt-1 text-small text-fg-3">
+            The voice the assistant answers in. It changes the wording only: every persona answers only from your
+            files, and says so when something is not in them.
+          </p>
+          <div className="mt-3 flex flex-col gap-2">
+            {PERSONAS.map((option) => (
+              <label
+                key={option.id}
+                className={cx(
+                  'flex cursor-pointer gap-3 rounded-lg border px-4 py-3 transition-colors',
+                  persona === option.id ? 'border-accent-fg bg-accent-subtle' : 'border-line-strong bg-inset hover:border-fg-3',
+                )}
+              >
+                <input
+                  type="radio"
+                  name="persona"
+                  value={option.id}
+                  checked={persona === option.id}
+                  onChange={() => setPersona(option.id)}
+                  className="mt-1 size-4 shrink-0 accent-(--accent-default)"
+                />
+                <span className="min-w-0">
+                  <span className="block font-medium text-fg">{option.name}</span>
+                  <span className="block text-small text-fg-2">{option.for}</span>
+                  <span className="mt-1 block text-small text-fg-3">
+                    Not in your files: <q>{option.notCovered}</q>
+                  </span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
         <div>
           <Button type="submit" loading={update.isPending} disabled={!changed} className="mt-1">
             Save changes

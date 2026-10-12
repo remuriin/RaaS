@@ -2,10 +2,22 @@
 
 export type ServiceStatus = 'pending' | 'active' | 'failed' | 'deleting'
 
+/** The voice a service answers in. It changes the wording only; what the assistant may say is the same for all four. */
+export type Persona = 'support' | 'tutor' | 'guide' | 'reference'
+
+/** The four voices, in the order they are offered, each with what it is for and how it says "that is not in your files". */
+export const PERSONAS: { id: Persona; name: string; for: string; notCovered: string }[] = [
+  { id: 'support', name: 'Support agent', for: 'A product or a business.', notCovered: "I don't have that info yet." },
+  { id: 'tutor', name: 'Tutor', for: 'Notes, courses and manuals.', notCovered: "That isn't covered in these notes." },
+  { id: 'guide', name: 'Guide', for: 'Stories, lore and history.', notCovered: "That isn't told here." },
+  { id: 'reference', name: 'Plain reference', for: 'Anything, with no personality.', notCovered: "The files don't cover that." },
+]
+
 export interface Service {
   id: string
   name: string
   productName: string | null
+  persona: Persona
   status: ServiceStatus
   errorMessage: string | null
   url: string

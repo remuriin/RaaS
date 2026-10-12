@@ -41,7 +41,7 @@ const HOW = [
   },
   {
     title: 'When nothing matches, it says so',
-    text: 'If your files don\'t cover a question, the reply says that plainly and the response carries "answered": false, so your app can handle it.',
+    text: 'If your files don\'t cover a question, the reply says that plainly and the response carries "answered": false, so your app can handle it. In a service\'s settings you choose the voice it answers in: support agent, tutor, guide or plain reference. The voice changes the wording, never what it may say.',
   },
 ]
 
