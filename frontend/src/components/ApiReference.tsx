@@ -34,7 +34,7 @@ const ERRORS = [
   { status: '409', means: 'A file with that name is already stored. Delete it first.' },
   { status: '413', means: 'A PDF over 10 MB, another file over 500 KB, or a question with its history over 100 KB.' },
   { status: '415', means: "The upload's Content-Type does not match the ending of its name." },
-  { status: '503', means: 'The model is busy or rate limited. Retry shortly.' },
+  { status: '503', means: 'The model is busy or rate limited, or the service is restarting or was deleted. Retry shortly.' },
 ]
 
 const section = 'scroll-mt-24'

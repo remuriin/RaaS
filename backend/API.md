@@ -49,6 +49,8 @@ The message is written for end users and can be shown as is. One error also carr
 | 502 | The service's process is not responding |
 | 503 | The model is busy or rate limited; retry shortly |
 
+The table above is for `/api/...`. A service's own address, `/i/<id>/...` (called with its API key), answers `503` with `{"error":"The service is not responding right now. Try again in a moment."}` when the id has no running service behind it: it was deleted, never existed, or is restarting for a few seconds during a deploy. Until 2026-10-13 a deleted or unknown id answered `404` there. An id that is not a UUID still answers `404`.
+
 ## Types
 
 ```ts
