@@ -226,7 +226,7 @@ function Pending() {
     <Card className="p-6" role="status">
       <h2 className="text-h3">Setting up your service</h2>
       <p className="mt-2 max-w-xl text-fg-2">
-        A private address and its own process are being prepared. This normally takes about 15 seconds, and this page
+        A private address and its own process are being prepared. This normally takes about 10 seconds, and this page
         updates by itself.
       </p>
       <div className="mt-6 max-w-xl">

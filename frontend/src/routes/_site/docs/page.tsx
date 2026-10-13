@@ -127,7 +127,7 @@ Reports sent by email are not accepted.`
 const STEPS = [
   {
     title: 'Create a service',
-    text: 'In the dashboard, choose "New service" and give it a name. It is ready in about 15 seconds.',
+    text: 'In the dashboard, choose "New service" and give it a name. It is ready in about 10 seconds.',
   },
   {
     title: 'Generate its API key',

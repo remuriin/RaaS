@@ -117,7 +117,7 @@ function LandingPage() {
               <div>
                 <h3 className="text-h2">Create a service</h3>
                 <p className="mt-2 max-w-lg text-body-lg text-fg-2">
-                  It gets a private address and its own assistant, ready in about 15 seconds.
+                  It gets a private address and its own assistant, ready in about 10 seconds.
                 </p>
                 <div className="mt-4 flex items-center gap-2">
                   <StatusBadge status="pending" />
@@ -251,7 +251,7 @@ function LandingPage() {
           <dl className="reveal mt-8 grid grid-cols-2 gap-x-6 gap-y-8 lg:grid-cols-4 lg:divide-x lg:divide-line">
             <Limit value="3" unit="services" note="per account, each with its own files and key" />
             <Limit value="10" unit="MB" note="per PDF, and 500 KB for other files" />
-            <Limit value="15" unit="seconds" note="or so to set up a new service" />
+            <Limit value="10" unit="seconds" note="or so to set up a new service" />
             <Limit value="5" unit="requests" note="per second from one IP address" />
           </dl>
         </div>

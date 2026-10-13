@@ -47,7 +47,7 @@ export function CreateServiceDialog({ open, onClose }: { open: boolean; onClose:
       onClose={close}
       busy={create.isPending}
       title="New service"
-      description="You get an address and room for your files. Setting it up takes about 15 seconds."
+      description="You get an address and room for your files. Setting it up takes about 10 seconds."
     >
       <form onSubmit={submit} noValidate className="flex flex-col gap-4">
         {create.error && (
