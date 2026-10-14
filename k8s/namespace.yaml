@@ -1,5 +1,0 @@
-# The box everything of this project lives in. Deleting the namespace deletes all of it.
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: rem-raas
