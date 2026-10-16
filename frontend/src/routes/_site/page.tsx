@@ -252,7 +252,7 @@ function LandingPage() {
             <Limit value="3" unit="services" note="per account, each with its own files and key" />
             <Limit value="10" unit="MB" note="per PDF, and 500 KB for other files" />
             <Limit value="10" unit="seconds" note="or so to set up a new service" />
-            <Limit value="5" unit="requests" note="per second from one IP address" />
+            <Limit value="10" unit="requests" note="per second from one IP address, and 300 a minute" />
           </dl>
         </div>
       </section>

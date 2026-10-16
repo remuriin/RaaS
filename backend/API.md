@@ -283,4 +283,4 @@ export default defineConfig({
 });
 ```
 
-**Deployment.** The full procedure (building, copying `dist/` to the VPS, the nginx snippet with its caching rules, security headers and the Content-Security-Policy that allows Firebase's sign-in pop-up) is in the backend repository: `RAG-API/deploy/README.md`, section "The web app". The app is served from `/var/www/rag-app`; a redeploy is a file copy and needs no nginx reload.
+**Deployment.** A push to `main` builds the web app into a container image, and Flux deploys it blue-green in the cluster. The caching rules are in the container; the security headers and the Content-Security-Policy that allows Firebase's sign-in pop-up are in its route at the front door (Fleet's `apps/raas/route.yaml`). The full description is in the backend repository: `RAG-API/deploy/README.md`, section "The web app".

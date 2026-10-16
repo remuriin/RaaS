@@ -178,7 +178,7 @@ export function ApiReference({ url }: { url: string }) {
           ))}
         </div>
         <p className="mt-6 text-fg-2">
-          Limits: 5 requests per second from one IP address, 10 MB per PDF and 500 KB per other file, 2,000 characters
+          Limits: 10 requests per second and 300 per minute from one IP address, 10 MB per PDF and 500 KB per other file, 2,000 characters
           per question, 100 KB per
           question request. Of a conversation, the last {HISTORY_MESSAGES} messages and {HISTORY_CHARS} characters of
           each are used.

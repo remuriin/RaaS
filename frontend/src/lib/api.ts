@@ -14,7 +14,7 @@ export class ApiError extends Error {
   }
 }
 
-// Used when the reply has no message of its own (for example an nginx error page instead of JSON)
+// Used when the reply has no message of its own (for example the front door's own plain-text error instead of JSON)
 const FALLBACK: Record<number, string> = {
   0: "Can't reach the server. Check your connection and try again.",
   401: 'Your session has expired. Sign in again to carry on.',
