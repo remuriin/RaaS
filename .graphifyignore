@@ -1,0 +1,14 @@
+# graphify: extra exclusions on top of .gitignore and graphify's defaults
+# (node_modules, dist, build, .next, venv, __pycache__ are skipped already)
+vendor/
+coverage/
+*.min.js
+*.map
+
+# decorative UI sprite sheets (one vision call each, no project knowledge)
+*.webp
+**/favicon.svg
+
+# graphify's own Claude Code files (skill copy, hook settings, instruction section)
+/.claude/
+/CLAUDE.md
